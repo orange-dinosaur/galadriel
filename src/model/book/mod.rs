@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     error::{Error, Result},
-    galadriel::CreateBookRequest,
+    galadriel::{CreateBookRequest, UpdateBookRequest},
 };
 
 use super::iterable::{Iterable, IterableType};
@@ -547,6 +547,144 @@ impl Iterable for BookForUpdate {
         }
 
         (fields_names, fields_values)
+    }
+}
+
+impl From<UpdateBookRequest> for BookForUpdate {
+    fn from(cbr: UpdateBookRequest) -> BookForUpdate {
+        let mut book_fc = BookForUpdate::default();
+
+        if cbr.edition_id.is_some() {
+            book_fc.edition_id = Some(Uuid::parse_str(cbr.edition_id.unwrap().as_str()).unwrap());
+        }
+        if cbr.external_id.is_some() {
+            book_fc.external_id = cbr.external_id;
+        }
+        if cbr.external_source.is_some() {
+            book_fc.external_source = cbr.external_source;
+        }
+        if !cbr.title.is_empty() {
+            book_fc.title = Some(cbr.title);
+        }
+        if !cbr.authors.is_empty() {
+            book_fc.authors = Some(cbr.authors);
+        }
+        if cbr.publisher.is_some() {
+            book_fc.publisher = cbr.publisher;
+        }
+        if cbr.published_date.is_some() {
+            let pub_date = cbr.published_date.clone().unwrap();
+            book_fc.published_date = Some(
+                DateTime::parse_from_str(&pub_date, "%Y-%m-%d %H:%M:%S")
+                    .unwrap()
+                    .with_timezone(&Utc),
+            );
+        }
+        if cbr.published_year.is_some() {
+            book_fc.published_year = cbr.published_year;
+        }
+        if cbr.description.is_some() {
+            book_fc.description = cbr.description;
+        }
+        if cbr.isbn10.is_some() {
+            book_fc.isbn10 = cbr.isbn10;
+        }
+        if cbr.isbn13.is_some() {
+            book_fc.isbn13 = cbr.isbn13;
+        }
+        if cbr.page_count.is_some() {
+            book_fc.page_count = cbr.page_count;
+        }
+        if cbr.print_type.is_some() {
+            book_fc.print_type = cbr.print_type;
+        }
+        if !cbr.categories.is_empty() {
+            book_fc.categories = Some(cbr.categories);
+        }
+        if cbr.maturity_rating.is_some() {
+            book_fc.maturity_rating = cbr.maturity_rating;
+        }
+        if cbr.language.is_some() {
+            book_fc.language = cbr.language;
+        }
+        if cbr.image_url.is_some() {
+            book_fc.image_url = cbr.image_url;
+        }
+        if cbr.image_url_small.is_some() {
+            book_fc.image_url_small = cbr.image_url_small;
+        }
+        if cbr.preview_link.is_some() {
+            book_fc.preview_link = cbr.preview_link;
+        }
+
+        book_fc
+    }
+}
+
+impl From<BookForUpdate> for UpdateBookRequest {
+    fn from(b_fc: BookForUpdate) -> UpdateBookRequest {
+        let mut cbr = UpdateBookRequest::default();
+
+        if b_fc.edition_id.is_some() {
+            cbr.edition_id = Some(b_fc.edition_id.unwrap().to_string());
+        }
+        if b_fc.external_id.is_some() {
+            cbr.external_id = b_fc.external_id;
+        }
+        if b_fc.external_source.is_some() {
+            cbr.external_source = b_fc.external_source;
+        }
+        if b_fc.title.is_some() {
+            cbr.title = b_fc.title.unwrap();
+        }
+        if b_fc.authors.is_some() {
+            cbr.authors = b_fc.authors.unwrap();
+        }
+        if b_fc.publisher.is_some() {
+            cbr.publisher = b_fc.publisher;
+        }
+        if b_fc.published_date.is_some() {
+            let pub_date = b_fc.published_date.unwrap();
+            cbr.published_date = Some(pub_date.to_string());
+        }
+        if b_fc.published_year.is_some() {
+            cbr.published_year = b_fc.published_year;
+        }
+        if b_fc.description.is_some() {
+            cbr.description = b_fc.description;
+        }
+        if b_fc.isbn10.is_some() {
+            cbr.isbn10 = b_fc.isbn10;
+        }
+        if b_fc.isbn13.is_some() {
+            cbr.isbn13 = b_fc.isbn13;
+        }
+        if b_fc.page_count.is_some() {
+            cbr.page_count = b_fc.page_count;
+        }
+        if b_fc.print_type.is_some() {
+            cbr.print_type = b_fc.print_type;
+        }
+        if b_fc.categories.is_some() {
+            cbr.categories = b_fc.categories.unwrap();
+        }
+        if b_fc.maturity_rating.is_some() {
+            cbr.maturity_rating = b_fc.maturity_rating;
+        }
+        if b_fc.language.is_some() {
+            cbr.language = b_fc.language;
+        }
+        if b_fc.image_url.is_some() {
+            cbr.image_url = b_fc.image_url;
+        }
+        if b_fc.image_url_small.is_some() {
+            cbr.image_url_small = b_fc.image_url_small;
+        }
+        if b_fc.preview_link.is_some() {
+            cbr.preview_link = b_fc.preview_link;
+        }
+
+        cbr
     }
 }
 

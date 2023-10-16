@@ -8,7 +8,7 @@ use crate::{
     galadriel::{
         galadriel_server::{Galadriel, GaladrielServer},
         CreateBookRequest, CreateBookResponse, DeleteBookRequest, DeleteBookResponse,
-        HealthCheckRequest, HealthCheckResponse,
+        HealthCheckRequest, HealthCheckResponse, UpdateBookRequest, UpdateBookResponse,
     },
     galadriel_proto,
     model::{self, ModelManager},
@@ -45,6 +45,13 @@ impl Galadriel for ServiceGaladriel {
         request: Request<CreateBookRequest>,
     ) -> Result<Response<CreateBookResponse>, Status> {
         routes::books::create_book(request.into_inner(), self.model_manager.clone()).await
+    }
+
+    async fn update_book(
+        &self,
+        request: Request<UpdateBookRequest>,
+    ) -> Result<Response<UpdateBookResponse>, Status> {
+        routes::books::update_book(request.into_inner(), self.model_manager.clone()).await
     }
 
     async fn delete_book(

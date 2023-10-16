@@ -3,9 +3,12 @@ use tracing::debug;
 use uuid::Uuid;
 
 use crate::{
-    galadriel::{CreateBookRequest, CreateBookResponse, DeleteBookRequest, DeleteBookResponse},
+    galadriel::{
+        CreateBookRequest, CreateBookResponse, DeleteBookRequest, DeleteBookResponse,
+        UpdateBookRequest, UpdateBookResponse,
+    },
     model::{
-        book::{model_controller::BookBmc, BookForCreate},
+        book::{model_controller::BookBmc, BookForCreate, BookForUpdate},
         ModelManager,
     },
 };
@@ -35,6 +38,31 @@ pub async fn create_book(
     }
 
     let res = CreateBookResponse { success: true };
+    Ok(Response::new(res))
+}
+
+// TODO: only admins should be able to delete a book
+pub async fn update_book(
+    update_book_request: UpdateBookRequest,
+    model_maanger: ModelManager,
+) -> Result<Response<UpdateBookResponse>, Status> {
+    debug!("FN: login - Service create a book");
+
+    // check that the book_id is not empty
+    if update_book_request.book_id.is_empty() {
+        return Err(Status::invalid_argument("book_id is empty"));
+    }
+
+    let book_uuid = Uuid::parse_str(update_book_request.book_id.clone().as_str())
+        .map_err(|e| Status::invalid_argument(e.to_string()))?;
+
+    let book_fu = BookForUpdate::from(update_book_request);
+
+    BookBmc::update(&model_maanger, book_fu, book_uuid)
+        .await
+        .map_err(|e| Status::internal(e.to_string()))?;
+
+    let res = UpdateBookResponse { success: true };
     Ok(Response::new(res))
 }
 

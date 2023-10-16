@@ -57,6 +57,57 @@ pub struct CreateBookResponse {
     #[prost(bool, tag = "1")]
     pub success: bool,
 }
+/// UpdateBook
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateBookRequest {
+    #[prost(string, tag = "1")]
+    pub book_id: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "2")]
+    pub edition_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "3")]
+    pub external_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "4")]
+    pub external_source: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag = "5")]
+    pub title: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "6")]
+    pub authors: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "7")]
+    pub publisher: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "8")]
+    pub published_date: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(int32, optional, tag = "9")]
+    pub published_year: ::core::option::Option<i32>,
+    #[prost(string, optional, tag = "10")]
+    pub description: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "11")]
+    pub isbn10: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "12")]
+    pub isbn13: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(int32, optional, tag = "13")]
+    pub page_count: ::core::option::Option<i32>,
+    #[prost(string, optional, tag = "14")]
+    pub print_type: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag = "15")]
+    pub categories: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "16")]
+    pub maturity_rating: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "17")]
+    pub language: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "18")]
+    pub image_url: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "19")]
+    pub image_url_small: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "20")]
+    pub preview_link: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateBookResponse {
+    #[prost(bool, tag = "1")]
+    pub success: bool,
+}
 /// DeleteBook
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -207,6 +258,32 @@ pub mod galadriel_client {
                 .insert(GrpcMethod::new("galadriel.Galadriel", "CreateBook"));
             self.inner.unary(req, path, codec).await
         }
+        /// UpdateBook
+        pub async fn update_book(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateBookRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::UpdateBookResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::new(
+                        tonic::Code::Unknown,
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/galadriel.Galadriel/UpdateBook",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("galadriel.Galadriel", "UpdateBook"));
+            self.inner.unary(req, path, codec).await
+        }
         /// DeleteBook
         pub async fn delete_book(
             &mut self,
@@ -256,6 +333,14 @@ pub mod galadriel_server {
             request: tonic::Request<super::CreateBookRequest>,
         ) -> std::result::Result<
             tonic::Response<super::CreateBookResponse>,
+            tonic::Status,
+        >;
+        /// UpdateBook
+        async fn update_book(
+            &self,
+            request: tonic::Request<super::UpdateBookRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::UpdateBookResponse>,
             tonic::Status,
         >;
         /// DeleteBook
@@ -423,6 +508,52 @@ pub mod galadriel_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = CreateBookSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/galadriel.Galadriel/UpdateBook" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateBookSvc<T: Galadriel>(pub Arc<T>);
+                    impl<
+                        T: Galadriel,
+                    > tonic::server::UnaryService<super::UpdateBookRequest>
+                    for UpdateBookSvc<T> {
+                        type Response = super::UpdateBookResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UpdateBookRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as Galadriel>::update_book(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = UpdateBookSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

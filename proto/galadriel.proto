@@ -8,6 +8,9 @@ service Galadriel {
     // CreateBook
     rpc CreateBook(CreateBookRequest) returns (CreateBookResponse) {}
 
+    // UpdateBook
+    rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse) {}
+
     // DeleteBook
     rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse) {}
 }
@@ -43,6 +46,34 @@ message CreateBookRequest {
 }
 
 message CreateBookResponse {
+    bool success = 1;
+}
+
+// UpdateBook
+message UpdateBookRequest {
+    string book_id = 1;
+    optional string edition_id = 2;
+    optional string external_id = 3;
+    optional string external_source = 4;
+    string title = 5;
+    repeated string authors = 6;
+    optional string publisher = 7;
+    optional string published_date = 8;
+    optional int32 published_year = 9;
+    optional string description = 10;
+    optional string isbn10 = 11;
+    optional string isbn13 = 12;
+    optional int32 page_count = 13;
+    optional string print_type = 14;
+    repeated string categories = 15;
+    optional string maturity_rating = 16;
+    optional string language = 17;
+    optional string image_url = 18;
+    optional string image_url_small = 19;
+    optional string preview_link = 20;
+}
+
+message UpdateBookResponse {
     bool success = 1;
 }
 
