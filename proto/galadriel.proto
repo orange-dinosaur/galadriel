@@ -1,0 +1,56 @@
+syntax = "proto3";
+package galadriel;
+
+service Galadriel {
+    // HealthCheck - Takes no arguments and returns a success bool
+    rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {}
+
+    // CreateBook
+    rpc CreateBook(CreateBookRequest) returns (CreateBookResponse) {}
+
+    // DeleteBook
+    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse) {}
+}
+
+// HealthCheck
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+    bool success = 1;
+}
+
+// CreateBook
+message CreateBookRequest {
+    optional string edition_id = 1;
+    optional string external_id = 2;
+    optional string external_source = 3;
+    string title = 4;
+    repeated string authors = 5;
+    optional string publisher = 6;
+    optional string published_date = 7;
+    optional int32 published_year = 8;
+    optional string description = 9;
+    optional string isbn10 = 10;
+    optional string isbn13 = 11;
+    optional int32 page_count = 12;
+    optional string print_type = 13;
+    repeated string categories = 14;
+    optional string maturity_rating = 15;
+    optional string language = 16;
+    optional string image_url = 17;
+    optional string image_url_small = 18;
+    optional string preview_link = 19;
+}
+
+message CreateBookResponse {
+    bool success = 1;
+}
+
+// DeleteBook
+message DeleteBookRequest {
+    string book_id = 2;
+}
+
+message DeleteBookResponse {
+    bool success = 1;
+}
