@@ -67,8 +67,6 @@ export async function registerUser(
 
         redirect('/home');
     } catch (error) {
-        console.error(error);
-
         if (isRedirectError(error)) {
             redirect('/home');
         }

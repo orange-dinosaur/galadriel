@@ -11,14 +11,24 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import { useActionState } from 'react';
+import { registerUser } from '@/auth/register';
+import { RegisterFormState } from '@/lib/custom-types';
+import { signupWithGoogle } from '@/auth/oauth';
 
 export function SignupForm({
     className,
     ...props
 }: React.ComponentProps<'div'>) {
+    const initialState: RegisterFormState = {};
+    const [state, formAction, pending] = useActionState(
+        registerUser,
+        initialState
+    );
+
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
-            <form>
+            <form action={formAction}>
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
                         <a
@@ -43,11 +53,23 @@ export function SignupForm({
                         </FieldDescription>
                     </div>
                     <Field>
+                        <FieldLabel htmlFor="username">Username</FieldLabel>
+                        <Input
+                            id="username"
+                            name="username"
+                            type="text"
+                            defaultValue={state?.username}
+                            placeholder="john-doe"
+                            required
+                        />
+                    </Field>
+                    <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
                         <Input
                             id="email"
                             type="email"
                             name="email"
+                            defaultValue={state?.email}
                             placeholder="m@example.com"
                             required
                         />
@@ -58,6 +80,8 @@ export function SignupForm({
                             id="password"
                             name="password"
                             type="password"
+                            defaultValue={state?.password}
+                            placeholder="********"
                             required
                         />
                         {/* <FieldDescription>
@@ -72,19 +96,35 @@ export function SignupForm({
                             id="confirm-password"
                             name="confirm-password"
                             type="password"
+                            defaultValue={state?.confirmPassword}
+                            placeholder="********"
                             required
                         />
                         {/* <FieldDescription>
                             Please confirm your password.
                         </FieldDescription> */}
+                        {state?.message && (
+                            <p className="text-red-500 text-sm">
+                                {state?.message}
+                            </p>
+                        )}
                     </Field>
                     <Field>
-                        <Button type="submit">Create Account</Button>
+                        <Button
+                            type="submit"
+                            className="cursor-pointer"
+                            disabled={pending}>
+                            Create Account
+                        </Button>
                     </Field>
                     <FieldSeparator>Or</FieldSeparator>
                     <Field className="grid gap-4 sm:grid-cols-2">
                         {/* TODO: Add apple login */}
-                        <Button variant="outline" type="button" disabled>
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="cursor-pointer"
+                            disabled>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24">
@@ -95,7 +135,12 @@ export function SignupForm({
                             </svg>
                             Continue with Apple
                         </Button>
-                        <Button variant="outline" type="button">
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="cursor-pointer"
+                            disabled={pending}
+                            onClick={signupWithGoogle}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24">

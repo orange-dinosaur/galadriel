@@ -11,14 +11,24 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import { LoginFormState } from '@/lib/custom-types';
+import { useActionState } from 'react';
+import { createSession } from '@/auth/session';
+import { signupWithGoogle } from '@/auth/oauth';
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<'div'>) {
+    const initialState: LoginFormState = {};
+    const [state, formAction, pending] = useActionState(
+        createSession,
+        initialState
+    );
+
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
-            <form>
+            <form action={formAction}>
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
                         <a
@@ -48,6 +58,7 @@ export function LoginForm({
                             id="email"
                             type="email"
                             name="email"
+                            defaultValue={state?.email}
                             placeholder="m@example.com"
                             required
                         />
@@ -66,17 +77,32 @@ export function LoginForm({
                             id="password"
                             type="password"
                             name="password"
+                            defaultValue={state?.password}
                             placeholder="********"
                             required
                         />
+                        {state?.message && (
+                            <p className="text-red-500 text-sm">
+                                {state?.message}
+                            </p>
+                        )}
                     </Field>
                     <Field>
-                        <Button type="submit">Login</Button>
+                        <Button
+                            type="submit"
+                            className="cursor-pointer"
+                            disabled={pending}>
+                            Login
+                        </Button>
                     </Field>
                     <FieldSeparator>Or</FieldSeparator>
                     <Field className="grid gap-4 sm:grid-cols-2">
                         {/* TODO: Add apple login */}
-                        <Button variant="outline" type="button" disabled>
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="cursor-pointer"
+                            disabled>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24">
@@ -87,7 +113,12 @@ export function LoginForm({
                             </svg>
                             Continue with Apple
                         </Button>
-                        <Button variant="outline" type="button">
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="cursor-pointer"
+                            disabled={pending}
+                            onClick={signupWithGoogle}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24">

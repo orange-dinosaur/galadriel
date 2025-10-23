@@ -42,13 +42,13 @@ export async function createSession(
             expires: new Date(session.expire),
             path: '/',
         });
-
-        redirect('/home');
     } catch (error) {
         returnState.code = 401;
         returnState.message = 'Invalid email or password';
         return returnState;
     }
+
+    redirect('/home');
 }
 
 export async function deleteSession() {
