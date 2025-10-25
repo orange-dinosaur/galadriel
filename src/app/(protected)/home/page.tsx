@@ -1,6 +1,5 @@
-import { deleteSession } from '@/auth/session';
-import { Button } from '@/components/ui/button';
 import axiosInstance from '@/lib/axiosInstance';
+import { DbDocumentRow } from '@/lib/custom-types';
 
 export default async function Home() {
     const response = await axiosInstance(
@@ -8,27 +7,20 @@ export default async function Home() {
         'get'
     );
 
-    const data = response.data;
+    const d = response.data.documents;
+    const documents = DbDocumentRow.fromApiResponse(d);
 
     return (
         <div>
             <div>DOCUMENTS</div>
             <br />
             <div>
-                {data.rows.rows.map((row: any) => (
-                    <a href={`/document/${row.$id}`} key={row.$id}>
-                        <div key={row.$id}>{row.$id}</div>
+                {documents.map((doc: any) => (
+                    <a href={`/document/${doc.$id}`} key={doc.$id}>
+                        <div key={doc.$id}>{doc.$id}</div>
                     </a>
                 ))}
             </div>
-            <br />
-            <br />
-
-            <form action={deleteSession}>
-                <Button type="submit" className="cursor-pointer">
-                    Logout
-                </Button>
-            </form>
         </div>
     );
 }
