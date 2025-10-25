@@ -1,12 +1,12 @@
-import userAuth from '@/auth/userAuth';
+import { user } from '@/auth/user';
 import { NextRequest } from 'next/server';
 
 const { NextResponse } = require('next/server');
 
 export async function middleware(request: NextRequest) {
-    const user = await userAuth.getUser();
+    const u = await user.getUser();
 
-    if (!user) {
+    if (u.$id === '') {
         if (
             request.nextUrl.pathname === '/login' ||
             request.nextUrl.pathname === '/register'

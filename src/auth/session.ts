@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import { createAdminClient, createSessionClient } from '@/appwrite/config';
 import { redirect } from 'next/navigation';
-import userAuth from '@/auth/userAuth';
+import { AuthenticatedUser, user } from '@/auth/user';
 import { loginSchema } from '@/auth/schemas';
 import { LoginFormState } from '@/lib/custom-types';
 
@@ -52,12 +52,10 @@ export async function createSession(
 }
 
 export async function deleteSession() {
-    userAuth.sessionCookie = (await cookies()).get('session');
+    user.sessionCookie = (await cookies()).get('session');
 
     try {
-        const { account } = await createSessionClient(
-            userAuth.sessionCookie.value
-        );
+        const { account } = await createSessionClient(user.sessionCookie.value);
         await account.deleteSession({
             sessionId: 'current',
         });
@@ -66,8 +64,8 @@ export async function deleteSession() {
     }
 
     (await cookies()).delete('session');
-    userAuth.user = null;
-    userAuth.sessionCookie = null;
+    user.user = AuthenticatedUser.empty();
+    user.sessionCookie = null;
 
     redirect('/login');
 }
