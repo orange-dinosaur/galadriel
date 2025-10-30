@@ -1,3 +1,5 @@
+import Editor from '@/components/editor';
+
 export default async function DocumentId({
     params,
 }: {
@@ -5,9 +7,12 @@ export default async function DocumentId({
 }) {
     const documentId = (await params).id;
 
+    const content: string =
+        '<p>Hello World! 🌎️ - PINGUINI TATTICI NUCLEARI</p>';
+
     return (
-        <div className="flex flex-col items-center justify-center">
-            <div>DOCUMENT: {documentId}</div>
+        <div className="min-h-screen w-full">
+            <Editor content={content} />
         </div>
     );
 }
