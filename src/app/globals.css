@@ -287,4 +287,12 @@
             outline: 3px solid var(--purple);
         }
     }
+
+    /* Blockquote-specific styling */
+    blockquote {
+        border-left: 3px solid var(--color-primary);
+        background-color: var(--color-gray-50);
+        margin: 1.5rem 0;
+        padding-left: 1rem;
+    }
 }
