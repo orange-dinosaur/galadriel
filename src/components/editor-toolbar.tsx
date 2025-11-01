@@ -31,9 +31,13 @@ import {
     Undo2Icon,
     CheckIcon,
     ChevronsUpDownIcon,
+    StrikethroughIcon,
 } from 'lucide-react';
 import { defaultFontFamily } from '@/components/editor';
-import { ButtonGroup } from '@/components/ui/button-group';
+import {
+    ButtonGroup,
+    ButtonGroupSeparator,
+} from '@/components/ui/button-group';
 
 type EditorToolbarProps = {
     editor: Editor | null;
@@ -168,6 +172,9 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     }>
                     <Heading1Icon />
                 </Button>
+                {editor?.isActive('heading', { level: 2 }) && (
+                    <ButtonGroupSeparator />
+                )}
                 <Button
                     className="cursor-pointer font-bold"
                     variant={
@@ -185,6 +192,9 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     }>
                     <Heading2Icon />
                 </Button>
+                {editor?.isActive('heading', { level: 3 }) && (
+                    <ButtonGroupSeparator />
+                )}
                 <Button
                     className="cursor-pointer font-bold"
                     variant={
@@ -214,6 +224,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     onClick={() => editor?.chain().focus().toggleBold().run()}>
                     <BoldIcon />
                 </Button>
+                {editor?.isActive('italic') && <ButtonGroupSeparator />}
                 <Button
                     className="cursor-pointer italic"
                     variant={editor?.isActive('italic') ? 'outline' : 'ghost'}
@@ -223,6 +234,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     }>
                     <ItalicIcon />
                 </Button>
+                {editor?.isActive('underline') && <ButtonGroupSeparator />}
                 <Button
                     className="cursor-pointer italic"
                     variant={
@@ -234,6 +246,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     }>
                     <UnderlineIcon />
                 </Button>
+                {editor?.isActive('blockquote') && <ButtonGroupSeparator />}
                 <Button
                     className="cursor-pointer"
                     variant={
@@ -244,6 +257,16 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                         editor?.chain().focus().toggleBlockquote().run()
                     }>
                     <QuoteIcon />
+                </Button>
+                {editor?.isActive('strike') && <ButtonGroupSeparator />}
+                <Button
+                    className="cursor-pointer"
+                    variant={editor?.isActive('strike') ? 'outline' : 'ghost'}
+                    size={'sm'}
+                    onClick={() =>
+                        editor?.chain().focus().toggleStrike().run()
+                    }>
+                    <StrikethroughIcon />
                 </Button>
                 <Button
                     className="cursor-pointer"
@@ -270,6 +293,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     }>
                     <ListIcon />
                 </Button>
+                {editor?.isActive('orderedList') && <ButtonGroupSeparator />}
                 <Button
                     className="cursor-pointer font-bold"
                     variant={
@@ -281,6 +305,7 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
                     }>
                     <ListOrderedIcon />
                 </Button>
+                {editor?.isActive('taskList') && <ButtonGroupSeparator />}
                 <Button
                     className="cursor-pointer font-bold"
                     variant={editor?.isActive('taskList') ? 'outline' : 'ghost'}
