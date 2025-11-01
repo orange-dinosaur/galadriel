@@ -12,10 +12,14 @@ import EditorToolbar from '@/components/editor-toolbar';
 import EditorBubbleMenu from './editor-menu-bubble';
 import EditorFloatingMenu from './editor-menu-floating';
 import { useEditorState } from '@tiptap/react';
+import { useEffect } from 'react';
 
 type EditorProps = {
     content: string;
 };
+
+export const defaultFontFamily: string =
+    process.env.NEXT_PUBLIC_DEFAULT_FONT_FAMILY || 'Geist';
 
 /* TODO: Define better sheet measures and render for mobile */
 /* TODO: Fix image resize */
@@ -24,7 +28,9 @@ const Editor = ({ content }: EditorProps) => {
         extensions: [
             StarterKit,
             TextStyle,
-            FontFamily,
+            FontFamily.configure({
+                types: ['textStyle'],
+            }),
             TaskList,
             TaskItem.configure({
                 nested: true,
@@ -46,7 +52,7 @@ const Editor = ({ content }: EditorProps) => {
         immediatelyRender: false,
     });
 
-    const editorState = useEditorState({
+    /* const editorState = useEditorState({
         editor,
 
         // the selector function is used to select the state you want to react to
@@ -72,7 +78,14 @@ const Editor = ({ content }: EditorProps) => {
                 isTaskList: editor.isActive('taskList'),
             };
         },
-    });
+    }); */
+
+    /* Set default font */
+    useEffect(() => {
+        if (editor) {
+            editor.chain().setFontFamily(defaultFontFamily).run();
+        }
+    }, [editor, defaultFontFamily]);
 
     return (
         <div className="flex min-h-screen w-full flex-col">
@@ -80,9 +93,7 @@ const Editor = ({ content }: EditorProps) => {
                 <EditorToolbar editor={editor} />
             </div>
 
-            {editor && editor.commands.focus() && (
-                <EditorBubbleMenu editor={editor} />
-            )}
+            {editor && <EditorBubbleMenu editor={editor} />}
 
             {editor && <EditorFloatingMenu editor={editor} />}
 
