@@ -1,4 +1,4 @@
-import Editor from '@/components/editor';
+import Editor from '@/components/editor/menu-floating/editor';
 
 export default async function DocumentId({
     params,

@@ -8,18 +8,15 @@ import { TextStyle, FontFamily } from '@tiptap/extension-text-style';
 import Image from '@tiptap/extension-image';
 import ImageResize from 'tiptap-extension-resize-image';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import EditorToolbar from '@/components/editor-toolbar';
-import EditorBubbleMenu from './editor-menu-bubble';
-import EditorFloatingMenu from './editor-menu-floating';
-import { useEditorState } from '@tiptap/react';
+import EditorToolbar from '@/components/editor/toolbar/toolbar';
+import EditorBubbleMenu from '@/components/editor/menu-bubble/menu-bubble';
+import EditorFloatingMenu from '@/components/editor/menu-floating';
+import { defaultFontFamily } from '@/components/editor/fonts/fonts';
 import { useEffect } from 'react';
 
 type EditorProps = {
     content: string;
 };
-
-export const defaultFontFamily: string =
-    process.env.NEXT_PUBLIC_DEFAULT_FONT_FAMILY || 'Geist';
 
 /* TODO: Define better sheet measures and render for mobile */
 /* TODO: Fix image resize */
