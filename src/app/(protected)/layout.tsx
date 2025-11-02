@@ -1,5 +1,5 @@
 import { user } from '@/auth/user';
-import { AppSidebar } from '@/components/app-sidebar';
+import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import axiosInstance from '@/lib/axiosInstance';
@@ -15,7 +15,7 @@ export default async function ProtectedLayout({
     const u = await user.getUser();
 
     const response = await axiosInstance(
-        'http://localhost:3000/api/documents',
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents`,
         'get'
     );
     const d = response.data.documents;

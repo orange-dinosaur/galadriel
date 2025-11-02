@@ -9,7 +9,7 @@ export default async function ProjectId({
     const projectId = (await params).id;
 
     const response = await axiosInstance(
-        `http://localhost:3000/api/documents?projectId=${projectId}`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents?projectId=${projectId}`,
         'get'
     );
 
