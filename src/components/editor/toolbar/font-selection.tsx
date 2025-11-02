@@ -16,7 +16,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
-import { defaultFontFamily, fonts } from '@/components/editor/fonts/fonts';
+import { defaultFontFamily, fonts } from '@/components/editor/text-style/fonts';
 
 type FontFamilySelectionProps = {
     editor: Editor | null;
@@ -88,7 +88,9 @@ const FontFamilySelection = ({ editor }: FontFamilySelectionProps) => {
                                                 : 'opacity-0'
                                         )}
                                     />
-                                    {font.label}
+                                    <span style={{ fontFamily: font.value }}>
+                                        {font.label}
+                                    </span>
                                 </CommandItem>
                             ))}
                         </CommandGroup>
