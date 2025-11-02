@@ -1,11 +1,13 @@
 import { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
 import { HighlighterIcon, PaletteIcon } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/button-group';
 import {
-    ButtonGroup,
-    ButtonGroupSeparator,
-} from '@/components/ui/button-group';
-import { ColorResult, CompactPicker, TwitterPicker } from 'react-color';
+    ColorResult,
+    CompactPicker,
+    TwitterPicker,
+    SketchPicker,
+} from 'react-color';
 import {
     colorsArr,
     defaultFontColor,
@@ -24,8 +26,14 @@ const ToolbarColors = ({ editor }: ToolbarColorsProps) => {
     const colorValue =
         editor?.getAttributes('textStyle').color || defaultFontColor;
 
+    const colorHighlightValue = editor?.getAttributes('highlight').color;
+
     const onColorChange = (color: ColorResult) => {
         editor?.chain().focus().setColor(color.hex).run();
+    };
+
+    const onHighlightColorChange = (color: ColorResult) => {
+        editor?.chain().focus().setHighlight({ color: color.hex }).run();
     };
 
     return (
@@ -44,28 +52,37 @@ const ToolbarColors = ({ editor }: ToolbarColorsProps) => {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="p-0">
-                    {/* TODO: Fix how white is displayed */}
-                    <TwitterPicker
-                        colors={colorsArr}
+                    <SketchPicker
+                        /* colors={colorsArr} */
                         color={colorValue}
                         onChange={onColorChange}
                     />
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-                className="cursor-pointer font-bold"
-                variant={
-                    editor?.isActive('heading', { level: 2 })
-                        ? 'outline'
-                        : 'ghost'
-                }
-                size={'sm'}
-                onClick={() =>
-                    editor?.chain().focus().toggleHeading({ level: 2 }).run()
-                }>
-                <HighlighterIcon />
-            </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        className="cursor-pointer font-bold"
+                        variant={'ghost'}
+                        size={'sm'}>
+                        <HighlighterIcon
+                            color={
+                                colorHighlightValue == undefined
+                                    ? 'white'
+                                    : colorHighlightValue
+                            }
+                        />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="p-0">
+                    <SketchPicker
+                        /* colors={colorsArr} */
+                        color={colorHighlightValue}
+                        onChange={onHighlightColorChange}
+                    />
+                </DropdownMenuContent>
+            </DropdownMenu>
         </ButtonGroup>
     );
 };
