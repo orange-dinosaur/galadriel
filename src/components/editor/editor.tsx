@@ -10,6 +10,7 @@ import {
     TextStyleKit,
     Color,
 } from '@tiptap/extension-text-style';
+import Link from '@tiptap/extension-link';
 import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
 import ImageResize from 'tiptap-extension-resize-image';
@@ -47,6 +48,13 @@ const Editor = ({ content }: EditorProps) => {
             TableKit,
             Image,
             ImageResize,
+            /* TODO: Extend link configuration */
+            Link.configure({
+                openOnClick: false,
+                autolink: true,
+                defaultProtocol: 'https',
+                protocols: ['http', 'https'],
+            }),
         ],
 
         editorProps: {
