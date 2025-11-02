@@ -14,9 +14,11 @@ export default async function Home() {
         process.env.NEXT_PUBLIC_RANDOM_BOOK_QUOTE_ENDPOINT ?? '',
         'get'
     );
-    const quote = randomQuote.data.quote ?? 'Book quote not found.';
-    const title = randomQuote.data.book ?? 'Title not found.';
-    const author = randomQuote.data.author ?? 'Author not found.';
+    const quote =
+        randomQuote.data.quote ??
+        'Non lo spegni, il mare, quando brucia nella notte';
+    const title = randomQuote.data.book ?? 'Oceano Mare';
+    const author = randomQuote.data.author ?? 'Alessandro Baricco';
 
     return (
         <>
