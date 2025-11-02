@@ -295,4 +295,12 @@
         margin: 1.5rem 0;
         padding-left: 1rem;
     }
+
+    /* Highlight-specific styling */
+    mark {
+        background-color: #faf594;
+        border-radius: 0.4rem;
+        box-decoration-break: clone;
+        padding: 0.1rem 0.3rem;
+    }
 }

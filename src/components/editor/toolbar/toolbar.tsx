@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { defaultFontFamily, fonts } from '@/components/editor/fonts/fonts';
+import { defaultFontFamily, fonts } from '@/components/editor/text-style/fonts';
 import ToolbarUndoRedo from '@/components/editor/toolbar/undo-redo';
 import FontFamilySelection from '@/components/editor/toolbar/font-selection';
+import ToolbarColors from '@/components/editor/toolbar/colors';
 import ToolbarHeadings from '@/components/editor/toolbar/headings';
 import ToolbarTextStyle from '@/components/editor/toolbar/text-style';
 import ToolbarLists from '@/components/editor/toolbar/lists';
@@ -52,6 +53,10 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
             <div className="border border-muted-foreground h-6 mx-2"></div>
 
             <FontFamilySelection editor={editor} />
+
+            <div className="border border-muted-foreground h-6 mx-2"></div>
+
+            <ToolbarColors editor={editor} />
 
             <div className="border border-muted-foreground h-6 mx-2"></div>
 

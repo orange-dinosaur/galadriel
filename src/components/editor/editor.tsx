@@ -4,14 +4,21 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
 import { TableKit } from '@tiptap/extension-table';
-import { TextStyle, FontFamily } from '@tiptap/extension-text-style';
+import {
+    TextStyle,
+    FontFamily,
+    TextStyleKit,
+    Color,
+} from '@tiptap/extension-text-style';
+import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
 import ImageResize from 'tiptap-extension-resize-image';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import EditorToolbar from '@/components/editor/toolbar/toolbar';
 import EditorBubbleMenu from '@/components/editor/menu-bubble/menu-bubble';
 import EditorFloatingMenu from '@/components/editor/menu-floating/menu-floating';
-import { defaultFontFamily } from '@/components/editor/fonts/fonts';
+import { defaultFontFamily } from '@/components/editor/text-style/fonts';
+import { defaultFontColor } from '@/components/editor/text-style/colors';
 import { useEffect } from 'react';
 
 type EditorProps = {
@@ -25,8 +32,13 @@ const Editor = ({ content }: EditorProps) => {
         extensions: [
             StarterKit,
             TextStyle,
+            TextStyleKit,
             FontFamily.configure({
                 types: ['textStyle'],
+            }),
+            Color,
+            Highlight.configure({
+                multicolor: true,
             }),
             TaskList,
             TaskItem.configure({
@@ -49,40 +61,13 @@ const Editor = ({ content }: EditorProps) => {
         immediatelyRender: false,
     });
 
-    /* const editorState = useEditorState({
-        editor,
-
-        // the selector function is used to select the state you want to react to
-        selector: ({ editor }) => {
-            if (!editor) return null;
-
-            return {
-                isEditable: editor.isEditable,
-                currentSelection: editor.state.selection,
-                currentContent: editor.getJSON(),
-
-                isHeader1: editor.isActive('heading', { level: 1 }),
-                isHeader2: editor.isActive('heading', { level: 2 }),
-                isHeader3: editor.isActive('heading', { level: 3 }),
-
-                isBold: editor.isActive('bold'),
-                isItalic: editor.isActive('italic'),
-                isUnderlined: editor.isActive('underline'),
-                isBlockquote: editor.isActive('blockquote'),
-
-                isBulletList: editor.isActive('bulletList'),
-                isOrderedList: editor.isActive('orderedList'),
-                isTaskList: editor.isActive('taskList'),
-            };
-        },
-    }); */
-
-    /* Set default font */
+    /* Set default font and color */
     useEffect(() => {
         if (editor) {
             editor.chain().setFontFamily(defaultFontFamily).run();
+            editor.chain().setColor(defaultFontColor).run();
         }
-    }, [editor, defaultFontFamily]);
+    }, [editor, defaultFontFamily, defaultFontColor]);
 
     return (
         <div className="flex min-h-screen w-full flex-col">
