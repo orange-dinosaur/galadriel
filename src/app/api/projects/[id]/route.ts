@@ -27,6 +27,10 @@ export async function GET(
         });
         const projects = DbProjectRow.fromApiResponse(projectRows.rows);
 
+        console.log();
+        console.log('projects: ', projects);
+        console.log();
+
         if (projects.length === 0) {
             return Response.json({ message: 'Project not found', status: 404 });
         }

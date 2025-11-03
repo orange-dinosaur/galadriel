@@ -19,13 +19,23 @@ export default async function ProtectedLayout({
         'get'
     );
 
-    const resData: UserData = UserData.fromApiResponse(response.data.userData);
+    let data = AppSidebarData.empty();
 
-    resData.user.name = u.name;
-    resData.user.email = u.email;
-    resData.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
+    if (response.data.status && response.data.status !== 200) {
+        data.user.name = u.name;
+        data.user.email = u.email;
+        data.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
+    } else {
+        const resData: UserData = UserData.fromApiResponse(
+            response.data.userData
+        );
 
-    const data = AppSidebarData.fromUserData(resData);
+        resData.user.name = u.name;
+        resData.user.email = u.email;
+        resData.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
+
+        data = AppSidebarData.fromUserData(resData);
+    }
 
     return (
         <div className="[--header-height:calc(--spacing(14))]">
