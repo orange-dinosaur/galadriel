@@ -1,5 +1,5 @@
 import axiosInstance from '@/lib/axiosInstance';
-import { DbDocumentRow } from '@/lib/custom-types';
+import { DbDocumentRow, UserData } from '@/lib/custom-types';
 
 export default async function ProjectId({
     params,
@@ -9,12 +9,20 @@ export default async function ProjectId({
     const projectId = (await params).id;
 
     const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents?projectId=${projectId}`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}`,
         'get'
     );
 
-    const d = response.data.documents;
-    const documents = DbDocumentRow.fromApiResponse(d);
+    if (response.data.status && response.data.status !== 200) {
+        return (
+            <div>
+                <div>PROEJCT {projectId} NOT FOUND</div>
+            </div>
+        );
+    }
+
+    const resData: UserData = UserData.fromApiResponse(response.data.userData);
+    const documents = resData.data[0].documents;
 
     return (
         <div>

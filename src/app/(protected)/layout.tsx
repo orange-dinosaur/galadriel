@@ -3,7 +3,7 @@ import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import axiosInstance from '@/lib/axiosInstance';
-import { AppSidebarData, DbDocumentRow } from '@/lib/custom-types';
+import { AppSidebarData, DbDocumentRow, UserData } from '@/lib/custom-types';
 
 export const iframeHeight = '800px';
 
@@ -18,17 +18,14 @@ export default async function ProtectedLayout({
         `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents`,
         'get'
     );
-    const d = response.data.documents;
-    const documents = DbDocumentRow.fromApiResponse(d);
 
-    const data = AppSidebarData.fromUserAndDocuments(
-        {
-            name: u.name,
-            email: u.email,
-            avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
-        },
-        documents
-    );
+    const resData: UserData = UserData.fromApiResponse(response.data.userData);
+
+    resData.user.name = u.name;
+    resData.user.email = u.email;
+    resData.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
+
+    const data = AppSidebarData.fromUserData(resData);
 
     return (
         <div className="[--header-height:calc(--spacing(14))]">

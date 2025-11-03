@@ -5,25 +5,21 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { Query } from 'node-appwrite';
 
-export async function GET(request: NextRequest) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
     try {
-        const searchParams = request.nextUrl.searchParams;
-        const userId = searchParams.get('userId'); // e.g. `/api/documents?projectId=hello`
+        const projectId = (await params).id;
 
         user.sessionCookie = (await cookies()).get('session');
 
         const { authenticatedUser, database } = await user.getUserAndDb();
 
         const queries: string[] = [];
+        queries.push(Query.equal('$id', projectId));
 
-        if (userId && userId !== authenticatedUser.$id) {
-            queries.push(Query.equal('userId', userId));
-            queries.push(Query.equal('public', true));
-        } else {
-            queries.push(Query.equal('userId', authenticatedUser.$id));
-        }
-
-        // get all user projects
+        // get the user project
         const projectRows = await database.listRows({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
             tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
@@ -31,22 +27,22 @@ export async function GET(request: NextRequest) {
         });
         const projects = DbProjectRow.fromApiResponse(projectRows.rows);
 
+        if (projects.length === 0) {
+            return Response.json({ message: 'Project not found', status: 404 });
+        }
+
+        if (!projects[0].public) {
+            if (authenticatedUser?.$id !== projects[0].userId) {
+                return Response.json({
+                    message: 'Access DENIED',
+                    status: 403,
+                });
+            }
+        }
+
         queries.length = 0;
-        queries.push(
-            Query.contains(
-                'projectId',
-                projects.map((p) => p.$id)
-            )
-        );
-        queries.push(
-            Query.equal(
-                'userId',
-                userId && userId !== authenticatedUser.$id
-                    ? userId
-                    : authenticatedUser.$id
-            )
-        );
-        queries.push(Query.orderAsc('projectId'));
+        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.orderDesc('$createdAt'));
 
         // get all user documents
         const docRows = await database.listRows({
