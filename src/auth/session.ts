@@ -59,9 +59,7 @@ export async function deleteSession() {
         await account.deleteSession({
             sessionId: 'current',
         });
-    } catch (error) {
-        console.error(error);
-    }
+    } catch (error) {}
 
     (await cookies()).delete('session');
     user.user = AuthenticatedUser.empty();

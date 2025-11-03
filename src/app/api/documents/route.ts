@@ -63,7 +63,6 @@ export async function GET(request: NextRequest) {
 
         return Response.json({ userData });
     } catch (error) {
-        console.error(error);
         return Response.json({ message: 'Access DENIED', status: 403 });
     }
 }
