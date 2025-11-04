@@ -16,6 +16,13 @@ export type LoginFormState = {
     password?: string;
 };
 
+export type NewProjectFormState = {
+    code?: number;
+    message?: string;
+    name?: string;
+    private?: boolean;
+};
+
 export class AppSidebarData {
     user: {
         name: string;

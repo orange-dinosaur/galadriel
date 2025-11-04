@@ -10,6 +10,7 @@ import {
     Roboto,
 } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 // @ts-ignore
 import './globals.css';
 
@@ -73,6 +74,7 @@ export default function RootLayout({
                     disableTransitionOnChange>
                     {children}
                 </ThemeProvider>
+                <Toaster />
             </body>
         </html>
     );

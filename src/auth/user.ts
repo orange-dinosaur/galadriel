@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { createSessionClient } from '@/appwrite/config';
-import { Client, TablesDB } from 'node-appwrite';
+import { Client, TablesDB, Storage } from 'node-appwrite';
 
 export class AuthenticatedUser {
     $id: string;
@@ -103,15 +103,22 @@ export class AuthenticatedUser {
 export const user: {
     user: AuthenticatedUser;
     database: TablesDB;
+    storage: Storage;
     sessionCookie: any;
     getUser: () => Promise<AuthenticatedUser>;
     getUserAndDb: () => Promise<{
         authenticatedUser: AuthenticatedUser;
         database: TablesDB;
     }>;
+    getUserAndDbAndStorage: () => Promise<{
+        authenticatedUser: AuthenticatedUser;
+        database: TablesDB;
+        storage: Storage;
+    }>;
 } = {
     user: new AuthenticatedUser(),
     database: new TablesDB(new Client()),
+    storage: new Storage(new Client()),
     sessionCookie: undefined,
 
     getUser: async () => {
@@ -150,5 +157,31 @@ export const user: {
         }
 
         return { authenticatedUser: user.user, database: user.database };
+    },
+
+    getUserAndDbAndStorage: async () => {
+        user.sessionCookie = (await cookies()).get('session') || null;
+
+        try {
+            const { account, database, storage } = await createSessionClient(
+                user.sessionCookie?.value || ''
+            );
+
+            const userData = await account.get();
+            user.user = new AuthenticatedUser(userData);
+
+            user.database = database;
+
+            user.storage = storage;
+        } catch (error) {
+            user.user = AuthenticatedUser.empty();
+            user.sessionCookie = null;
+        }
+
+        return {
+            authenticatedUser: user.user,
+            database: user.database,
+            storage: user.storage,
+        };
     },
 };
