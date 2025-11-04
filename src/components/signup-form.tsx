@@ -15,6 +15,7 @@ import { useActionState } from 'react';
 import { registerUser } from '@/auth/register';
 import { RegisterFormState } from '@/lib/custom-types';
 import { signupWithGoogle } from '@/auth/oauth';
+import { Spinner } from '@/components/ui/spinner';
 
 export function SignupForm({
     className,
@@ -114,6 +115,7 @@ export function SignupForm({
                             type="submit"
                             className="cursor-pointer"
                             disabled={pending}>
+                            {pending && <Spinner />}
                             Create Account
                         </Button>
                     </Field>

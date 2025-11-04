@@ -15,6 +15,7 @@ import { LoginFormState } from '@/lib/custom-types';
 import { useActionState } from 'react';
 import { createSession } from '@/auth/session';
 import { signupWithGoogle } from '@/auth/oauth';
+import { Spinner } from '@/components/ui/spinner';
 
 export function LoginForm({
     className,
@@ -92,6 +93,7 @@ export function LoginForm({
                             type="submit"
                             className="cursor-pointer"
                             disabled={pending}>
+                            {pending && <Spinner />}
                             Login
                         </Button>
                     </Field>
