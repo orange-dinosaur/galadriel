@@ -34,14 +34,23 @@ export async function POST(request: NextRequest) {
 
         defaultProjectDocs.map(async (docName) => {
             // create file
+            const fileId = ID.unique();
             const createdFile = await storage.createFile({
                 bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-                fileId: ID.unique(),
+                fileId: fileId,
                 file: new File(
                     [
-                        new Blob([JSON.stringify({})], {
-                            type: 'application/json',
-                        }),
+                        new Blob(
+                            [
+                                JSON.stringify({
+                                    type: 'doc',
+                                    content: [{ type: 'paragraph' }],
+                                }),
+                            ],
+                            {
+                                type: 'application/json',
+                            }
+                        ),
                     ],
                     docName + '.json',
                     {

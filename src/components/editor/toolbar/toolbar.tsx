@@ -7,12 +7,14 @@ import ToolbarColors from '@/components/editor/toolbar/colors';
 import ToolbarHeadings from '@/components/editor/toolbar/headings';
 import ToolbarTextStyle from '@/components/editor/toolbar/text-style';
 import ToolbarLists from '@/components/editor/toolbar/lists';
+import ToolbarSave from '@/components/editor/toolbar/save';
 
 type EditorToolbarProps = {
+    documentId: string;
     editor: Editor | null;
 };
 
-const EditorToolbar = ({ editor }: EditorToolbarProps) => {
+const EditorToolbar = ({ documentId, editor }: EditorToolbarProps) => {
     const [open, setOpen] = useState(false);
     const [, forceUpdate] = useState(0); // used only to trigger re-render
 
@@ -47,7 +49,9 @@ const EditorToolbar = ({ editor }: EditorToolbarProps) => {
     };
 
     return (
-        <div className="mx-auto flex w-full max-w-[816px] justify-center items-center gap-3 px-6 py-2">
+        <div className="mx-auto flex w-full justify-center items-center gap-3 px-6 py-2">
+            <ToolbarSave documentId={documentId} editor={editor} />
+
             <ToolbarUndoRedo editor={editor} />
 
             <div className="border border-muted-foreground h-6 mx-2"></div>

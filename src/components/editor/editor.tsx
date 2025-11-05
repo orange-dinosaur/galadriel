@@ -1,6 +1,6 @@
 'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Content } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
 import { TableKit } from '@tiptap/extension-table';
@@ -23,12 +23,13 @@ import { defaultFontColor } from '@/components/editor/text-style/colors';
 import { useEffect } from 'react';
 
 type EditorProps = {
-    content: string;
+    documentId: string;
+    content: Content;
 };
 
 /* TODO: Define better sheet measures and render for mobile */
 /* TODO: Fix image resize */
-const Editor = ({ content }: EditorProps) => {
+const Editor = ({ documentId, content }: EditorProps) => {
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -80,7 +81,7 @@ const Editor = ({ content }: EditorProps) => {
     return (
         <div className="flex min-h-screen w-full flex-col">
             <div className="sticky top-(--header-height,0px) z-40 w-full bg-background">
-                <EditorToolbar editor={editor} />
+                <EditorToolbar documentId={documentId} editor={editor} />
             </div>
 
             {editor && <EditorBubbleMenu editor={editor} />}

@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+import { Models } from 'node-appwrite';
 
 export type RegisterFormState = {
     code?: number;
@@ -220,6 +221,106 @@ export class DbProjectRow {
     static fromApiResponse(rows: any[]): DbProjectRow[] {
         if (!rows || !Array.isArray(rows)) return [];
         return rows.map((r) => new DbProjectRow(r));
+    }
+}
+
+export class FileMetadata {
+    $id: string;
+    bucketId: string;
+    $createdAt: string;
+    $updatedAt: string;
+    $permissions: string[];
+    name: string;
+    signature: string;
+    mimeType: string;
+    sizeOriginal: number;
+    chunksTotal: number;
+    chunksUploaded: number;
+
+    constructor(data: {
+        $id: string;
+        bucketId: string;
+        $createdAt: string;
+        $updatedAt: string;
+        $permissions: string[];
+        name: string;
+        signature: string;
+        mimeType: string;
+        sizeOriginal: number;
+        chunksTotal: number;
+        chunksUploaded: number;
+    }) {
+        this.$id = data.$id;
+        this.bucketId = data.bucketId;
+        this.$createdAt = data.$createdAt;
+        this.$updatedAt = data.$updatedAt;
+        this.$permissions = data.$permissions;
+        this.name = data.name;
+        this.signature = data.signature;
+        this.mimeType = data.mimeType;
+        this.sizeOriginal = data.sizeOriginal;
+        this.chunksTotal = data.chunksTotal;
+        this.chunksUploaded = data.chunksUploaded;
+    }
+
+    static fromApiResponse(data: any) {
+        return new FileMetadata(data);
+    }
+
+    static fromApiResponseArray(data: any[]) {
+        return data.map((d) => new FileMetadata(d));
+    }
+
+    toObject() {
+        return {
+            $id: this.$id,
+            bucketId: this.bucketId,
+            $createdAt: this.$createdAt,
+            $updatedAt: this.$updatedAt,
+            $permissions: this.$permissions,
+            name: this.name,
+            signature: this.signature,
+            mimeType: this.mimeType,
+            sizeOriginal: this.sizeOriginal,
+            chunksTotal: this.chunksTotal,
+            chunksUploaded: this.chunksUploaded,
+        };
+    }
+}
+
+export class FullDocument {
+    document: DbDocumentRow;
+    fileMetadata: FileMetadata;
+    fileContentJson: string;
+
+    constructor(
+        document: DbDocumentRow,
+        fileMetadata: FileMetadata,
+        fileContentJson: string
+    ) {
+        this.document = document;
+        this.fileMetadata = fileMetadata;
+        this.fileContentJson = fileContentJson;
+    }
+
+    static fromApiResponse(data: {
+        document: any;
+        fileMetadata: string;
+        fileContentJson: string;
+    }) {
+        return new FullDocument(
+            new DbDocumentRow(data.document),
+            FileMetadata.fromApiResponse(data.fileMetadata),
+            data.fileContentJson
+        );
+    }
+
+    toObject() {
+        return {
+            document: this.document,
+            fileMetadata: this.fileMetadata,
+            fileContentJson: this.fileContentJson,
+        };
     }
 }
 

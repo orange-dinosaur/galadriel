@@ -38,7 +38,7 @@ export function NavMain({
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
-                    <Collapsible key={item.title} asChild defaultOpen={false}>
+                    <Collapsible key={item.title} asChild defaultOpen={true}>
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip={item.title}>
                                 <a href={item.url}>
