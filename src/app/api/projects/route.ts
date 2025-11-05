@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
             });
 
             // create document in the db
-            const document = await database.createRow({
+            await database.createRow({
                 databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
                 tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
                 rowId: ID.unique(),
@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
                     projectId: project.$id,
                     title: docName,
                     fileId: createdFile.$id,
-                    version: 1,
                 },
             });
         });

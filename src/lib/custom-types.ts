@@ -1,6 +1,3 @@
-import { LucideIcon } from 'lucide-react';
-import { Models } from 'node-appwrite';
-
 export type RegisterFormState = {
     code?: number;
     message?: string;
@@ -162,7 +159,7 @@ export class DbDocumentRow {
     projectId: string;
     title?: string;
     fileId?: string;
-    version?: number;
+    drafts?: string[];
     $id: string;
     $createdAt: Date;
     $updatedAt: Date;
@@ -173,7 +170,7 @@ export class DbDocumentRow {
         projectName?: string;
         title?: string;
         fileId?: string;
-        version?: number;
+        drafts?: string[];
         $id: string;
         $createdAt: string | Date;
         $updatedAt: string | Date;
@@ -182,13 +179,13 @@ export class DbDocumentRow {
         this.projectId = data.projectId;
         this.title = data.title;
         this.fileId = data.fileId;
-        this.version = data.version;
+        this.drafts = data.drafts;
         this.$id = data.$id;
         this.$createdAt = new Date(data.$createdAt);
         this.$updatedAt = new Date(data.$updatedAt);
     }
 
-    static fromApiResponse(rows: any[]): DbDocumentRow[] {
+    static fromObject(rows: any[]): DbDocumentRow[] {
         if (!rows || !Array.isArray(rows)) return [];
         return rows.map((r) => new DbDocumentRow(r));
     }
@@ -218,7 +215,46 @@ export class DbProjectRow {
         this.$updatedAt = new Date(data.$updatedAt);
     }
 
-    static fromApiResponse(rows: any[]): DbProjectRow[] {
+    static fromObject(rows: any[]): DbProjectRow[] {
+        if (!rows || !Array.isArray(rows)) return [];
+        return rows.map((r) => new DbProjectRow(r));
+    }
+}
+
+export class DbDraftRow {
+    userId: string;
+    documentId: string;
+    fileIdMain: string;
+    fileIdDraft: string;
+    fileIdSeparation: string;
+    version: number;
+    $id: string;
+    $createdAt: Date;
+    $updatedAt: Date;
+
+    constructor(data: {
+        userId: string;
+        documentId: string;
+        fileIdMain: string;
+        fileIdDraft: string;
+        fileIdSeparation: string;
+        version: number;
+        $id: string;
+        $createdAt: string | Date;
+        $updatedAt: string | Date;
+    }) {
+        this.userId = data.userId;
+        this.documentId = data.documentId;
+        this.fileIdMain = data.fileIdMain;
+        this.fileIdDraft = data.fileIdDraft;
+        this.fileIdSeparation = data.fileIdSeparation;
+        this.version = data.version;
+        this.$id = data.$id;
+        this.$createdAt = new Date(data.$createdAt);
+        this.$updatedAt = new Date(data.$updatedAt);
+    }
+
+    static fromObject(rows: any[]): DbProjectRow[] {
         if (!rows || !Array.isArray(rows)) return [];
         return rows.map((r) => new DbProjectRow(r));
     }
@@ -263,11 +299,11 @@ export class FileMetadata {
         this.chunksUploaded = data.chunksUploaded;
     }
 
-    static fromApiResponse(data: any) {
+    static fromObject(data: any) {
         return new FileMetadata(data);
     }
 
-    static fromApiResponseArray(data: any[]) {
+    static fromObjectArray(data: any[]) {
         return data.map((d) => new FileMetadata(d));
     }
 
@@ -303,14 +339,14 @@ export class FullDocument {
         this.fileContentJson = fileContentJson;
     }
 
-    static fromApiResponse(data: {
+    static fromObject(data: {
         document: any;
         fileMetadata: string;
         fileContentJson: string;
     }) {
         return new FullDocument(
             new DbDocumentRow(data.document),
-            FileMetadata.fromApiResponse(data.fileMetadata),
+            FileMetadata.fromObject(data.fileMetadata),
             data.fileContentJson
         );
     }
@@ -337,7 +373,7 @@ export class UserData {
         documents: {
             title: string;
             fileId: string;
-            version: number;
+            drafts: string[];
             $id: string;
             $createdAt: Date;
             $updatedAt: Date;
@@ -378,7 +414,7 @@ export class UserData {
                 documents: projectDocuments.map((doc) => ({
                     title: doc.title ?? 'Untitled Document',
                     fileId: doc.fileId ?? '',
-                    version: doc.version ?? 1,
+                    drafts: doc.drafts ?? [],
                     $id: doc.$id,
                     $createdAt: doc.$createdAt,
                     $updatedAt: doc.$updatedAt,
@@ -389,7 +425,7 @@ export class UserData {
         return userData;
     }
 
-    static fromApiResponse(data: {
+    static fromObject(data: {
         user: {
             name: string;
             email: string;
@@ -401,7 +437,7 @@ export class UserData {
             documents: {
                 title: string;
                 fileId: string;
-                version: number;
+                drafts: string[];
                 $id: string;
                 $createdAt: Date;
                 $updatedAt: Date;

@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
             tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
             queries: queries,
         });
-        const projects = DbProjectRow.fromApiResponse(projectRows.rows);
+        const projects = DbProjectRow.fromObject(projectRows.rows);
 
         queries.length = 0;
         queries.push(
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
             tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromApiResponse(docRows.rows);
+        const documents = DbDocumentRow.fromObject(docRows.rows);
 
         const userData: UserData = UserData.fromDbSearchResult(
             projects,

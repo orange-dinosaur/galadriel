@@ -22,9 +22,7 @@ export default async function DocumentId({
         );
     }
 
-    const fullDocument = FullDocument.fromApiResponse(
-        response.data.fullDocument
-    );
+    const fullDocument = FullDocument.fromObject(response.data.fullDocument);
 
     let content = fullDocument.fileContentJson;
     if (typeof content === 'string') {

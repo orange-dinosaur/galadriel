@@ -21,7 +21,7 @@ export default async function ProjectId({
         );
     }
 
-    const resData: UserData = UserData.fromApiResponse(response.data.userData);
+    const resData: UserData = UserData.fromObject(response.data.userData);
     const documents = resData.data[0].documents;
 
     return (

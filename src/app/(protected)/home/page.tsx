@@ -8,7 +8,7 @@ export default async function Home() {
     );
 
     const d = response.data.documents;
-    const documents = DbDocumentRow.fromApiResponse(d);
+    const documents = DbDocumentRow.fromObject(d);
 
     const randomQuote = await axiosInstance(
         process.env.NEXT_PUBLIC_RANDOM_BOOK_QUOTE_ENDPOINT ?? '',

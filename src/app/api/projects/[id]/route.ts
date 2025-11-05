@@ -25,7 +25,7 @@ export async function GET(
             tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
             queries: queries,
         });
-        const projects = DbProjectRow.fromApiResponse(projectRows.rows);
+        const projects = DbProjectRow.fromObject(projectRows.rows);
 
         if (projects.length === 0) {
             return Response.json({ message: 'Project not found', status: 404 });
@@ -50,7 +50,7 @@ export async function GET(
             tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromApiResponse(docRows.rows);
+        const documents = DbDocumentRow.fromObject(docRows.rows);
 
         const userData: UserData = UserData.fromDbSearchResult(
             projects,

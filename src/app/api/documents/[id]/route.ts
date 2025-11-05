@@ -31,7 +31,8 @@ export async function GET(
             tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromApiResponse(docRows.rows);
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+        console.log(documents);
         if (documents.length === 0) {
             return Response.json({
                 message: 'Document not found',
@@ -50,7 +51,7 @@ export async function GET(
                 tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
                 queries: queries,
             });
-            const projects = DbProjectRow.fromApiResponse(projectRows.rows);
+            const projects = DbProjectRow.fromObject(projectRows.rows);
             if (projects.length === 0) {
                 return Response.json({
                     message: 'Document not found',
@@ -81,7 +82,7 @@ export async function GET(
 
         const fullDocument = new FullDocument(
             documents[0],
-            FileMetadata.fromApiResponse(fileMetadata),
+            FileMetadata.fromObject(fileMetadata),
             fileContentJson
         );
 
@@ -115,7 +116,7 @@ export async function PUT(
             tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromApiResponse(docRows.rows);
+        const documents = DbDocumentRow.fromObject(docRows.rows);
         if (documents.length === 0) {
             return Response.json({
                 message: 'Document not found',

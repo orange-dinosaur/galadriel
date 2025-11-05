@@ -26,9 +26,7 @@ export default async function ProtectedLayout({
         data.user.email = u.email;
         data.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
     } else {
-        const resData: UserData = UserData.fromApiResponse(
-            response.data.userData
-        );
+        const resData: UserData = UserData.fromObject(response.data.userData);
 
         resData.user.name = u.name;
         resData.user.email = u.email;
