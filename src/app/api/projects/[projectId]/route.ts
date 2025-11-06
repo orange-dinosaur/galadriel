@@ -3,6 +3,7 @@ import { DbDocumentRow, DbProjectRow, UserData } from '@/lib/custom-types';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { Query } from 'node-appwrite';
+import { map } from 'zod';
 
 export async function GET(
     request: NextRequest,
@@ -148,25 +149,32 @@ export async function DELETE(
             return Response.json({ status: 403, message: 'Access DENIED' });
         }
 
+        const queries: string[] = [];
+        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.equal('userId', authenticatedUser.$id));
+
+        const docRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            queries: queries,
+        });
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+
+        // delete the project
         await database.deleteRow({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
             tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
             rowId: projectId,
         });
 
-        const queries: string[] = [];
-        queries.push(Query.equal('projectId', projectId));
-        queries.push(Query.equal('userId', authenticatedUser.$id));
-
-        const deletedDocuments = await database.deleteRows({
-            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
-            queries: queries,
-        });
-        const documents = DbDocumentRow.fromObject(deletedDocuments.rows);
-
-        // delete all files
+        /* TODO: try to understand why batch delete does not work */
         documents.map(async (document) => {
+            await database.deleteRow({
+                databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+                tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+                rowId: document.$id,
+            });
+
             await storage.deleteFile({
                 bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
                 fileId: document.fileId || '',

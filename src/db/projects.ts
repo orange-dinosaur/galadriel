@@ -40,3 +40,16 @@ export async function createNewProject(
 
     return { status: 200, message: 'Project created successfully' };
 }
+
+export async function deleteProject(projectId: string) {
+    const response = await axiosInstance(
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}`,
+        'delete'
+    );
+
+    if (response.status !== 200) {
+        return { status: response.status, message: response.data.message };
+    }
+
+    return { status: 200, message: 'Project deleted successfully' };
+}

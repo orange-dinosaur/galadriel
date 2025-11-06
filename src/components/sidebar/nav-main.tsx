@@ -1,6 +1,11 @@
 'use client';
 
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import {
+    ChevronRight,
+    FilePlusIcon,
+    Trash2Icon,
+    type LucideIcon,
+} from 'lucide-react';
 
 import {
     Collapsible,
@@ -18,8 +23,20 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { usePathname } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { deleteProject } from '@/db/projects';
+import { toast } from 'sonner';
 
 export function NavMain({
     items,
@@ -37,6 +54,19 @@ export function NavMain({
 }) {
     const pathname = usePathname();
 
+    const handleDeleteProject = async (projectUrl: string) => {
+        const projectId = projectUrl.split('/')[1];
+
+        const response = await deleteProject(projectId);
+
+        if (response.status === 200) {
+            window.location.reload();
+            toast.success('Project deleted successfully');
+        } else {
+            toast.error('Something went wrong');
+        }
+    };
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
@@ -51,11 +81,54 @@ export function NavMain({
                         }>
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip={item.title}>
-                                <a href={item.url}>
-                                    {/* TODO: Make icon visible */}
-                                    {/* <item.icon /> */}
-                                    <span>{item.title}</span>
-                                </a>
+                                <span className="flex items-center justify-between">
+                                    <a href={item.url}>
+                                        {/* TODO: Make icon visible */}
+                                        {/* <item.icon /> */}
+                                        <span>{item.title}</span>
+                                    </a>
+                                    <span className="flex items-center gap-1">
+                                        <button>
+                                            <FilePlusIcon className="max-w-3.5 max-h-3.5 hover:text-accent-foreground cursor-pointer" />
+                                        </button>
+
+                                        {/* TODO: add spinner while project is been deleted */}
+                                        <AlertDialog>
+                                            <AlertDialogTrigger>
+                                                <Trash2Icon className="max-w-3.5 max-h-3.5 hover:text-destructive cursor-pointer" />
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>
+                                                        Are you absolutely sure?
+                                                    </AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be
+                                                        undone. This will
+                                                        permanently delete your
+                                                        project and remove all
+                                                        its related documents
+                                                        from our servers.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel className="cursor-pointer">
+                                                        Cancel
+                                                    </AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        className="cursor-pointer"
+                                                        onClick={() =>
+                                                            handleDeleteProject(
+                                                                item.url
+                                                            )
+                                                        }>
+                                                        Continue
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </span>
+                                </span>
                             </SidebarMenuButton>
                             {item.items?.length ? (
                                 <>
