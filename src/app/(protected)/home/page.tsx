@@ -10,9 +10,14 @@ export default async function Home() {
         'get'
     );
 
-    let resData = new UserData();
-    let data = new AppSidebarData();
-    if (!(response.data?.status !== 200)) {
+    let resData: UserData;
+    let data: AppSidebarData;
+
+    if (response.data?.status) {
+        /* TODO: check better the response */
+        resData = new UserData();
+        data = new AppSidebarData();
+    } else {
         resData = UserData.fromObject(response.data.userData);
         data = AppSidebarData.fromUserData(resData);
     }
