@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
                 userId: authenticatedUser.$id,
                 name: body.name,
                 public: !body.private,
+                image: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT || '',
             },
         });
 
@@ -74,13 +75,13 @@ export async function POST(request: NextRequest) {
         });
 
         return Response.json({
-            message: 'Project created successfully',
             status: 200,
+            message: 'Project created successfully',
         });
     } catch (error) {
         return Response.json({
-            message: 'Error while creating project',
             status: 500,
+            message: 'Error while creating project',
         });
     }
 }

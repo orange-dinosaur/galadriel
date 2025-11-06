@@ -23,13 +23,14 @@ import { defaultFontColor } from '@/components/editor/text-style/colors';
 import { useEffect } from 'react';
 
 type EditorProps = {
+    projectId: string;
     documentId: string;
     content: Content;
 };
 
 /* TODO: Define better sheet measures and render for mobile */
 /* TODO: Fix image resize */
-const Editor = ({ documentId, content }: EditorProps) => {
+const Editor = ({ projectId, documentId, content }: EditorProps) => {
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -81,7 +82,11 @@ const Editor = ({ documentId, content }: EditorProps) => {
     return (
         <div className="flex min-h-screen w-full flex-col">
             <div className="sticky top-(--header-height,0px) z-40 w-full bg-background">
-                <EditorToolbar documentId={documentId} editor={editor} />
+                <EditorToolbar
+                    projectId={projectId}
+                    documentId={documentId}
+                    editor={editor}
+                />
             </div>
 
             {editor && <EditorBubbleMenu editor={editor} />}

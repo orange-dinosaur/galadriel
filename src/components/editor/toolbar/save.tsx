@@ -8,11 +8,12 @@ import { toast } from 'sonner';
 import { useTransition } from 'react';
 
 type SaveProps = {
+    projectId: string;
     documentId: string;
     editor: Editor | null;
 };
 
-const ToolbarSave = ({ documentId, editor }: SaveProps) => {
+const ToolbarSave = ({ projectId, documentId, editor }: SaveProps) => {
     const [isPending, startTransition] = useTransition();
 
     const handleSave = () => {
@@ -21,9 +22,13 @@ const ToolbarSave = ({ documentId, editor }: SaveProps) => {
         const editorContent = JSON.stringify(editor?.getJSON());
 
         startTransition(async () => {
-            const response = await updateFileContent(documentId, editorContent);
+            const response = await updateFileContent(
+                projectId,
+                documentId,
+                editorContent
+            );
 
-            if (response.code && response.code !== 200) {
+            if (response.status && response.status !== 200) {
                 toast.error('Error saving document');
                 return;
             } else {

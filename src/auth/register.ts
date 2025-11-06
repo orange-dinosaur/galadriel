@@ -29,7 +29,7 @@ export async function registerUser(
 
     if (!validatedFields.success) {
         // TODO: return only error message
-        returnState.code = 400;
+        returnState.status = 400;
         returnState.message = validatedFields.error.message;
         return returnState;
     }
@@ -37,7 +37,7 @@ export async function registerUser(
     if (
         validatedFields.data.password !== validatedFields.data.confirmPassword
     ) {
-        returnState.code = 400;
+        returnState.status = 400;
         returnState.message = 'Passwords do not match';
         return returnState;
     }
@@ -45,6 +45,7 @@ export async function registerUser(
     try {
         const { account } = await createAdminClient();
 
+        /* TODO: force username to be unique */
         await account.create({
             userId: ID.unique(),
             email: validatedFields.data.email,
@@ -71,7 +72,7 @@ export async function registerUser(
             redirect('/home');
         }
 
-        returnState.code = 500;
+        returnState.status = 500;
         returnState.message = 'Error while creating user';
         return returnState;
     }

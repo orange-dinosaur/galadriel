@@ -9,7 +9,6 @@ import {
     SidebarContent,
     SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Button } from '../ui/button';
 import { NavActions } from './nav-actions';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {

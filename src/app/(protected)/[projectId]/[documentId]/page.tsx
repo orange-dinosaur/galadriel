@@ -5,12 +5,13 @@ import { FullDocument } from '@/lib/custom-types';
 export default async function DocumentId({
     params,
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ projectId: string; documentId: string }>;
 }) {
-    const documentId = (await params).id;
+    const projectId = (await params).projectId;
+    const documentId = (await params).documentId;
 
     const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents/${documentId}`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}/documents/${documentId}`,
         'get'
     );
 
@@ -31,7 +32,11 @@ export default async function DocumentId({
 
     return (
         <div className="min-h-screen w-full">
-            <Editor documentId={documentId} content={content} />
+            <Editor
+                projectId={projectId}
+                documentId={documentId}
+                content={content}
+            />
         </div>
     );
 }

@@ -20,7 +20,7 @@ export async function createNewProject(
 
     if (!validatedFields.success) {
         // TODO: return only error message
-        returnState.code = 400;
+        returnState.status = 400;
         returnState.message = validatedFields.error.message;
         return returnState;
     }
@@ -35,47 +35,8 @@ export async function createNewProject(
     );
 
     if (response.status !== 200) {
-        return { code: response.status, message: response.data.message };
+        return { status: response.status, message: response.data.message };
     }
 
-    return { code: 200, message: 'Project created successfully' };
-
-    /* const validatedFields = loginSchema.safeParse({
-        email: formData.get('email'),
-        password: formData.get('password'),
-    });
-
-    const returnState: LoginFormState = {
-        email: validatedFields.data?.email,
-        password: validatedFields.data?.password,
-    };
-
-    if (!validatedFields.success) {
-        // TODO: return only error message
-        returnState.code = 400;
-        returnState.message = validatedFields.error.message;
-        return returnState;
-    }
-
-    try {
-        const { account } = await createAdminClient();
-        const session = await account.createEmailPasswordSession({
-            email: validatedFields.data.email,
-            password: validatedFields.data.password,
-        });
-
-        (await cookies()).set('session', session.secret, {
-            httpOnly: true,
-            sameSite: 'strict',
-            secure: true,
-            expires: new Date(session.expire),
-            path: '/',
-        });
-    } catch (error) {
-        returnState.code = 401;
-        returnState.message = 'Invalid email or password';
-        return returnState;
-    }
-
-    redirect('/home'); */
+    return { status: 200, message: 'Project created successfully' };
 }

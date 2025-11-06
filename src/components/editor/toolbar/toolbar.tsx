@@ -10,11 +10,16 @@ import ToolbarLists from '@/components/editor/toolbar/lists';
 import ToolbarSave from '@/components/editor/toolbar/save';
 
 type EditorToolbarProps = {
+    projectId: string;
     documentId: string;
     editor: Editor | null;
 };
 
-const EditorToolbar = ({ documentId, editor }: EditorToolbarProps) => {
+const EditorToolbar = ({
+    projectId,
+    documentId,
+    editor,
+}: EditorToolbarProps) => {
     const [open, setOpen] = useState(false);
     const [, forceUpdate] = useState(0); // used only to trigger re-render
 
@@ -50,7 +55,11 @@ const EditorToolbar = ({ documentId, editor }: EditorToolbarProps) => {
 
     return (
         <div className="mx-auto flex w-full justify-center items-center gap-3 px-6 py-2">
-            <ToolbarSave documentId={documentId} editor={editor} />
+            <ToolbarSave
+                projectId={projectId}
+                documentId={documentId}
+                editor={editor}
+            />
 
             <ToolbarUndoRedo editor={editor} />
 

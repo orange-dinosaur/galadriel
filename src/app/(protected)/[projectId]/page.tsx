@@ -4,9 +4,9 @@ import { DbDocumentRow, UserData } from '@/lib/custom-types';
 export default async function ProjectId({
     params,
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ projectId: string }>;
 }) {
-    const projectId = (await params).id;
+    const projectId = (await params).projectId;
 
     const response = await axiosInstance(
         `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}`,

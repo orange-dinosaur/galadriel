@@ -38,7 +38,7 @@ export function NavActions() {
     );
 
     useEffect(() => {
-        if (state && state.code === 200 && isOpen) {
+        if (state && state.status === 200 && isOpen) {
             router.refresh();
             setIsOpen(false);
             toast.success('Project created successfully');
@@ -106,7 +106,7 @@ export function NavActions() {
                                     Create
                                 </Button>
                                 {state &&
-                                    state.code !== 200 &&
+                                    state.status !== 200 &&
                                     state?.message && (
                                         <p className="text-red-500 text-sm">
                                             {state?.message}

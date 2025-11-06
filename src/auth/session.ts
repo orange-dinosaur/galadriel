@@ -23,7 +23,7 @@ export async function createSession(
 
     if (!validatedFields.success) {
         // TODO: return only error message
-        returnState.code = 400;
+        returnState.status = 400;
         returnState.message = validatedFields.error.message;
         return returnState;
     }
@@ -43,7 +43,7 @@ export async function createSession(
             path: '/',
         });
     } catch (error) {
-        returnState.code = 401;
+        returnState.status = 401;
         returnState.message = 'Invalid email or password';
         return returnState;
     }

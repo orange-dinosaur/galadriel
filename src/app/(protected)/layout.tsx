@@ -15,7 +15,7 @@ export default async function ProtectedLayout({
     const u = await user.getUser();
 
     const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/users/${u.$id}`,
         'get'
     );
 

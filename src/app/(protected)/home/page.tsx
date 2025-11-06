@@ -1,14 +1,21 @@
+import { user } from '@/auth/user';
 import axiosInstance from '@/lib/axiosInstance';
-import { DbDocumentRow } from '@/lib/custom-types';
+import { AppSidebarData, DbDocumentRow, UserData } from '@/lib/custom-types';
 
 export default async function Home() {
+    const u = await user.getUser();
+
     const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/documents`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/users/${u.$id}`,
         'get'
     );
 
-    const d = response.data.documents;
-    const documents = DbDocumentRow.fromObject(d);
+    let resData = new UserData();
+    let data = new AppSidebarData();
+    if (!(response.data?.status !== 200)) {
+        resData = UserData.fromObject(response.data.userData);
+        data = AppSidebarData.fromUserData(resData);
+    }
 
     const randomQuote = await axiosInstance(
         process.env.NEXT_PUBLIC_RANDOM_BOOK_QUOTE_ENDPOINT ?? '',
@@ -22,7 +29,7 @@ export default async function Home() {
 
     return (
         <>
-            {documents.length === 0 && (
+            {data.navMain.length === 0 && (
                 <div className="w-full h-full flex justify-center items-center">
                     <div className="flex flex-col justify-center w-4/6 text-muted-foreground">
                         <blockquote className="border-l-4 border-muted-foreground pl-6 italic mb-8 text-5xl">
@@ -33,14 +40,14 @@ export default async function Home() {
                     </div>
                 </div>
             )}
-            {documents.length !== 0 && (
+            {data.navMain.length !== 0 && (
                 <div>
-                    <div>DOCUMENTS</div>
+                    <div>PROJECTS</div>
                     <br />
                     <div>
-                        {documents.map((doc: any) => (
-                            <a href={`/document/${doc.$id}`} key={doc.$id}>
-                                <div key={doc.$id}>{doc.$id}</div>
+                        {data.navMain.map((project: any) => (
+                            <a href={project.url} key={project.$id}>
+                                <div key={project.$id}>{project.title}</div>
                             </a>
                         ))}
                     </div>

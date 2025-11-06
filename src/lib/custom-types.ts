@@ -1,5 +1,5 @@
 export type RegisterFormState = {
-    code?: number;
+    status?: number;
     message?: string;
     username?: string;
     email?: string;
@@ -8,14 +8,14 @@ export type RegisterFormState = {
 };
 
 export type LoginFormState = {
-    code?: number;
+    status?: number;
     message?: string;
     email?: string;
     password?: string;
 };
 
 export type NewProjectFormState = {
-    code?: number;
+    status?: number;
     message?: string;
     name?: string;
     private?: boolean;
@@ -95,7 +95,7 @@ export class AppSidebarData {
         // Build each project group
         const navMain = Array.from(projectMap.entries()).map(
             ([projectId, docs]) => {
-                const projectUrl = `/project/${projectId}`;
+                const projectUrl = `/${projectId}`;
                 const isProjectActive = true;
 
                 return {
@@ -105,7 +105,7 @@ export class AppSidebarData {
                     isActive: isProjectActive,
                     items: docs.map((d) => ({
                         title: d.title || 'Untitled Document',
-                        url: `/document/${d.$id}`,
+                        url: `/${projectId}/${d.$id}`,
                     })),
                 };
             }
@@ -130,12 +130,12 @@ export class AppSidebarData {
 
         const navMain = data.map((d) => ({
             title: d.projectName,
-            url: `/project/${d.projectId}`,
+            url: `/${d.projectId}`,
             icon: 'folder',
             isActive: true,
             items: d.documents.map((doc) => ({
                 title: doc.title,
-                url: `/document/${doc.$id}`,
+                url: `/${d.projectId}/${doc.$id}`,
             })),
         }));
 
@@ -195,6 +195,7 @@ export class DbProjectRow {
     userId: string;
     name: string;
     public: boolean;
+    image: string;
     $id: string;
     $createdAt: Date;
     $updatedAt: Date;
@@ -203,6 +204,7 @@ export class DbProjectRow {
         userId: string;
         name: string;
         public: boolean;
+        image: string;
         $id: string;
         $createdAt: string | Date;
         $updatedAt: string | Date;
@@ -210,6 +212,7 @@ export class DbProjectRow {
         this.userId = data.userId;
         this.name = data.name;
         this.public = data.public;
+        this.image = data.image;
         this.$id = data.$id;
         this.$createdAt = new Date(data.$createdAt);
         this.$updatedAt = new Date(data.$updatedAt);
