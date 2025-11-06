@@ -18,6 +18,8 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { usePathname } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 export function NavMain({
     items,
@@ -33,12 +35,28 @@ export function NavMain({
         }[];
     }[];
 }) {
+    const pathname = usePathname();
+    console.log('pathname: ', pathname);
+    const pathnameParts = pathname?.split('/');
+    console.log('pathnameParts: ', pathnameParts);
+    console.log('pathnameParts length: ', pathnameParts.length);
+    const projectId = pathnameParts[1];
+    console.log('projectId: ', projectId);
+    const documentId = pathnameParts.length > 2 ? pathnameParts[2] : '';
+    console.log('documentId: ', documentId);
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
-                    <Collapsible key={item.title} asChild defaultOpen={true}>
+                    <Collapsible
+                        key={item.title}
+                        asChild
+                        defaultOpen={
+                            pathname === item.url ||
+                            pathname.startsWith(`${item.url}/`)
+                        }>
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip={item.title}>
                                 <a href={item.url}>
@@ -63,8 +81,18 @@ export function NavMain({
                                                 <SidebarMenuSubItem
                                                     key={subItem.title}>
                                                     <SidebarMenuSubButton
-                                                        asChild>
-                                                        <a href={subItem.url}>
+                                                        asChild
+                                                        className={`${
+                                                            pathname ===
+                                                                subItem.url ||
+                                                            pathname.startsWith(
+                                                                `${subItem.url}`
+                                                            )
+                                                                ? 'bg-secondary'
+                                                                : ''
+                                                        }`}>
+                                                        <a
+                                                            href={`${subItem.url}`}>
                                                             <span>
                                                                 {subItem.title}
                                                             </span>

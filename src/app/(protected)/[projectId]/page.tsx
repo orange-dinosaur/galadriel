@@ -13,6 +13,8 @@ export default async function ProjectId({
         'get'
     );
 
+    console.log('response: ', response);
+
     if (response.data.status && response.data.status !== 200) {
         return (
             <div>
@@ -30,7 +32,7 @@ export default async function ProjectId({
             <br />
             <div>
                 {documents.map((doc: any) => (
-                    <a href={`/document/${doc.$id}`} key={doc.$id}>
+                    <a href={`/${projectId}/${doc.$id}`} key={doc.$id}>
                         <div key={doc.$id}>{doc.$id}</div>
                     </a>
                 ))}
