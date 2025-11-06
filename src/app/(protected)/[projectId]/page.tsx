@@ -13,8 +13,6 @@ export default async function ProjectId({
         'get'
     );
 
-    console.log('response: ', response);
-
     if (response.data.status && response.data.status !== 200) {
         return (
             <div>

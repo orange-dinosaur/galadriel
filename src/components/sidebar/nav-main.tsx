@@ -36,14 +36,6 @@ export function NavMain({
     }[];
 }) {
     const pathname = usePathname();
-    console.log('pathname: ', pathname);
-    const pathnameParts = pathname?.split('/');
-    console.log('pathnameParts: ', pathnameParts);
-    console.log('pathnameParts length: ', pathnameParts.length);
-    const projectId = pathnameParts[1];
-    console.log('projectId: ', projectId);
-    const documentId = pathnameParts.length > 2 ? pathnameParts[2] : '';
-    console.log('documentId: ', documentId);
 
     return (
         <SidebarGroup>
