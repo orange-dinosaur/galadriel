@@ -51,8 +51,8 @@ export default async function Home() {
                     <br />
                     <div>
                         {data.navMain.map((project: any) => (
-                            <a href={project.url} key={project.$id}>
-                                <div key={project.$id}>{project.title}</div>
+                            <a href={project.url} key={project.url}>
+                                <div key={project.url}>{project.title}</div>
                             </a>
                         ))}
                     </div>

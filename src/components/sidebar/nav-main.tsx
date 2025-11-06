@@ -43,7 +43,7 @@ export function NavMain({
             <SidebarMenu>
                 {items.map((item) => (
                     <Collapsible
-                        key={item.title}
+                        key={item.url}
                         asChild
                         defaultOpen={
                             pathname === item.url ||
