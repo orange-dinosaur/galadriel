@@ -1,6 +1,12 @@
 import { user } from '@/auth/user';
 import axiosInstance from '@/lib/axiosInstance';
-import { AppSidebarData, DbDocumentRow, UserData } from '@/lib/custom-types';
+import {
+    AppSidebarData,
+    DbDocumentRow,
+    Project,
+    UserData,
+    UserDataFull,
+} from '@/lib/custom-types';
 
 export default async function Home() {
     const u = await user.getUser();
@@ -10,17 +16,38 @@ export default async function Home() {
         'get'
     );
 
-    let resData: UserData;
-    let data: AppSidebarData;
+    let data: UserDataFull;
+    if (!response.data.status && response.data.projectsObject) {
+        const projects: Project[] = response.data.projectsObject.map(
+            (project: any) => {
+                return Project.fromObject(project);
+            }
+        );
 
-    if (response.data?.status) {
-        /* TODO: check better the response */
-        resData = new UserData();
-        data = new AppSidebarData();
+        console.log('projects: ', projects);
+
+        data = UserDataFull.fromObject({
+            user: {
+                name: u.name,
+                email: u.email,
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
+                $id: u.$id,
+            },
+            projects: projects,
+        });
     } else {
-        resData = UserData.fromObject(response.data.userData);
-        data = AppSidebarData.fromUserData(resData);
+        data = UserDataFull.fromObject({
+            user: {
+                name: u.name,
+                email: u.email,
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
+                $id: u.$id,
+            },
+            projects: [],
+        });
     }
+
+    const projectList = data.projects.map((p) => p.project);
 
     const randomQuote = await axiosInstance(
         process.env.NEXT_PUBLIC_RANDOM_BOOK_QUOTE_ENDPOINT ?? '',
@@ -34,7 +61,7 @@ export default async function Home() {
 
     return (
         <>
-            {data.navMain.length === 0 && (
+            {data.projects.length === 0 && (
                 <div className="w-full h-full flex justify-center items-center">
                     <div className="flex flex-col justify-center w-4/6 text-muted-foreground">
                         <blockquote className="border-l-4 border-muted-foreground pl-6 italic mb-8 text-5xl">
@@ -45,14 +72,14 @@ export default async function Home() {
                     </div>
                 </div>
             )}
-            {data.navMain.length !== 0 && (
+            {data.projects.length !== 0 && (
                 <div>
                     <div>PROJECTS</div>
                     <br />
                     <div>
-                        {data.navMain.map((project: any) => (
-                            <a href={project.url} key={project.url}>
-                                <div key={project.url}>{project.title}</div>
+                        {projectList.map((p) => (
+                            <a href={p.$id} key={p.$id}>
+                                <div key={p.$id}>{p.name}</div>
                             </a>
                         ))}
                     </div>

@@ -1,8 +1,14 @@
 import { user } from '@/auth/user';
-import { DbDocumentRow, DbProjectRow, UserData } from '@/lib/custom-types';
+import {
+    DbDocumentRow,
+    DbProjectRow,
+    Project,
+    UserData,
+} from '@/lib/custom-types';
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Query } from 'node-appwrite';
+import { map } from 'zod';
 
 export async function GET(
     request: NextRequest,
@@ -55,12 +61,20 @@ export async function GET(
         });
         const documents = DbDocumentRow.fromObject(docRows.rows);
 
-        const userData: UserData = UserData.fromDbSearchResult(
-            projects,
-            documents
-        );
+        const projectsObject: Project[] = [];
+        projects.map((project) => {
+            const projectDocuments = documents.filter(
+                (doc) => doc.projectId === project.$id
+            );
+            projectsObject.push(new Project(project, projectDocuments));
+        });
 
-        return Response.json({ userData });
+        /* TODO: return proper reponse with error management */
+        /* return new NextResponse(JSON.stringify({ projectsObject }), {
+            status: 200,
+            statusText: 'OK'
+        }); */
+        return Response.json({ projectsObject });
     } catch (error) {
         return Response.json({
             status: 500,

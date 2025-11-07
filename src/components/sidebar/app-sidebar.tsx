@@ -10,9 +10,10 @@ import {
     SidebarFooter,
 } from '@/components/ui/sidebar';
 import { NavActions } from './nav-actions';
+import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-    data: {
+    /* data: {
         user: {
             name: string;
             email: string;
@@ -28,7 +29,8 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
                 url: string;
             }[];
         }[];
-    };
+    }; */
+    data: UserDataFullObject;
 }
 
 export function AppSidebar({ data, ...props }: AppSidebarProps) {
@@ -41,7 +43,7 @@ export function AppSidebar({ data, ...props }: AppSidebarProps) {
             <SidebarContent>
                 <NavActions />
 
-                <NavMain items={data.navMain} />
+                <NavMain data={data} />
             </SidebarContent>
 
             <SidebarFooter>

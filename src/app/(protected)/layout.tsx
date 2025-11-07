@@ -3,7 +3,7 @@ import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import axiosInstance from '@/lib/axiosInstance';
-import { AppSidebarData, DbDocumentRow, UserData } from '@/lib/custom-types';
+import { AppSidebarData, Project, UserDataFull } from '@/lib/custom-types';
 
 export const iframeHeight = '800px';
 
@@ -19,28 +19,44 @@ export default async function ProtectedLayout({
         'get'
     );
 
-    let data = AppSidebarData.empty();
+    let data: UserDataFull;
+    if (!response.data.status && response.data.projectsObject) {
+        const projects: Project[] = response.data.projectsObject.map(
+            (project: any) => {
+                return Project.fromObject(project);
+            }
+        );
 
-    if (response.data.status && response.data.status !== 200) {
-        data.user.name = u.name;
-        data.user.email = u.email;
-        data.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
+        console.log('projects: ', projects);
+
+        data = UserDataFull.fromObject({
+            user: {
+                name: u.name,
+                email: u.email,
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
+                $id: u.$id,
+            },
+            projects: projects,
+        });
     } else {
-        const resData: UserData = UserData.fromObject(response.data.userData);
-
-        resData.user.name = u.name;
-        resData.user.email = u.email;
-        resData.user.avatar = process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name;
-
-        data = AppSidebarData.fromUserData(resData);
+        data = UserDataFull.fromObject({
+            user: {
+                name: u.name,
+                email: u.email,
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
+                $id: u.$id,
+            },
+            projects: [],
+        });
     }
+    const dataObject = data.toObject();
 
     return (
         <div className="[--header-height:calc(--spacing(14))]">
             <SidebarProvider className="flex flex-col">
                 <SiteHeader />
                 <div className="flex flex-1">
-                    <AppSidebar data={data.toObject()} />
+                    <AppSidebar data={dataObject} />
                     <SidebarInset>
                         <div className="flex flex-1 flex-col gap-4 p-4">
                             <div className="min-h-screen flex-1 md:min-h-min">

@@ -2,6 +2,9 @@
 
 import {
     ChevronRight,
+    Edit2Icon,
+    Edit3Icon,
+    EditIcon,
     FilePlusIcon,
     Trash2Icon,
     type LucideIcon,
@@ -37,21 +40,9 @@ import {
 import { usePathname } from 'next/navigation';
 import { deleteProject } from '@/db/projects';
 import { toast } from 'sonner';
+import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
 
-export function NavMain({
-    items,
-}: {
-    items: {
-        title: string;
-        url: string;
-        icon?: string | LucideIcon;
-        isActive?: boolean;
-        items?: {
-            title: string;
-            url: string;
-        }[];
-    }[];
-}) {
+export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
 
     const handleDeleteProject = async (projectUrl: string) => {
@@ -66,6 +57,8 @@ export function NavMain({
             toast.error('Something went wrong');
         }
     };
+
+    const items = UserDataFull.fromUserDataFullObject(data).toNavMainItems();
 
     return (
         <SidebarGroup>
@@ -87,9 +80,15 @@ export function NavMain({
                                         {/* <item.icon /> */}
                                         <span>{item.title}</span>
                                     </a>
+
+                                    {/* action buttons */}
                                     <span className="flex items-center gap-1">
                                         <button>
                                             <FilePlusIcon className="max-w-3.5 max-h-3.5 hover:text-accent-foreground cursor-pointer" />
+                                        </button>
+
+                                        <button>
+                                            <Edit3Icon className="max-w-3.5 max-h-3.5 hover:text-accent-foreground cursor-pointer" />
                                         </button>
 
                                         {/* TODO: add spinner while project is been deleted */}
