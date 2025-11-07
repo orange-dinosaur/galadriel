@@ -8,8 +8,6 @@ export async function createNewProject(
     initialState: any,
     formData: FormData
 ): Promise<NewProjectFormState> {
-    console.log('formData: ', formData);
-
     const validatedFields = newProjectSchema.safeParse({
         name: formData.get('name'),
         private: formData.get('private') === 'on' ? true : false,
@@ -18,8 +16,6 @@ export async function createNewProject(
         tags: formData.get('tags'),
         description: formData.get('description'),
     });
-
-    console.log('validatedFields: ', validatedFields);
 
     const returnState: NewProjectFormState = {
         name: validatedFields.data?.name,

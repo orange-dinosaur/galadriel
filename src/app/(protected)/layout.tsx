@@ -27,8 +27,6 @@ export default async function ProtectedLayout({
             }
         );
 
-        console.log('projects: ', projects);
-
         data = UserDataFull.fromObject({
             user: {
                 name: u.name,

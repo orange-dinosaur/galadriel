@@ -24,8 +24,6 @@ export default async function Home() {
             }
         );
 
-        console.log('projects: ', projects);
-
         data = UserDataFull.fromObject({
             user: {
                 name: u.name,

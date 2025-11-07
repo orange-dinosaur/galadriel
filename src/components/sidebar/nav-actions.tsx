@@ -125,8 +125,6 @@ export function NavActions() {
         setTags('');
     }
 
-    console.log('tags: ', tags);
-
     return (
         <SidebarGroup className="pt-8">
             <SidebarMenu>
