@@ -31,7 +31,7 @@ export async function GET(
             return Response.json({ status: 404, message: 'Project not found' });
         }
 
-        if (!projects[0].public) {
+        if (projects[0].private) {
             if (authenticatedUser?.$id !== projects[0].userId) {
                 return Response.json({
                     status: 403,
@@ -72,9 +72,16 @@ export async function PATCH(
 
         const projectId = (await params).projectId;
 
-        const body: { name: string; public: boolean } = await request.json();
+        const body: {
+            name: string;
+            private: boolean;
+            image: string;
+            type: string;
+            tags: string[];
+            description: string;
+        } = await request.json();
 
-        if (!body.name && !body.public) {
+        if (!body) {
             return Response.json({
                 status: 400,
                 message: 'No fields in request body',
@@ -105,7 +112,13 @@ export async function PATCH(
             rowId: projectId,
             data: {
                 name: body.name ? body.name : projects[0].name,
-                public: body.public ? body.public : projects[0].public,
+                private: body.private ? body.private : projects[0].private,
+                image: body.image ? body.image : projects[0].image,
+                type: body.type ? body.type : projects[0].type,
+                tags: body.tags ? body.tags : projects[0].tags,
+                description: body.description
+                    ? body.description
+                    : projects[0].description,
             },
         });
 

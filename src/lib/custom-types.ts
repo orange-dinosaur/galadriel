@@ -1,3 +1,6 @@
+export const customArraySeparator =
+    process.env.NEXT_PUBLIC_CUSTOM_ARRAY_SEPARATOR || '&%&';
+
 export type RegisterFormState = {
     status?: number;
     message?: string;
@@ -19,6 +22,10 @@ export type NewProjectFormState = {
     message?: string;
     name?: string;
     private?: boolean;
+    image?: string;
+    type?: string;
+    tags?: string[];
+    description?: string;
 };
 
 export class AppSidebarData {
@@ -157,8 +164,8 @@ export class AppSidebarData {
 export class DbDocumentRow {
     userId: string;
     projectId: string;
-    title?: string;
-    fileId?: string;
+    title: string;
+    fileId: string;
     drafts?: string[];
     $id: string;
     $createdAt: Date;
@@ -167,9 +174,8 @@ export class DbDocumentRow {
     constructor(data: {
         userId: string;
         projectId: string;
-        projectName?: string;
-        title?: string;
-        fileId?: string;
+        title: string;
+        fileId: string;
         drafts?: string[];
         $id: string;
         $createdAt: string | Date;
@@ -194,8 +200,11 @@ export class DbDocumentRow {
 export class DbProjectRow {
     userId: string;
     name: string;
-    public: boolean;
+    private: boolean;
     image: string;
+    type: string;
+    tags?: string[];
+    description?: string;
     $id: string;
     $createdAt: Date;
     $updatedAt: Date;
@@ -203,16 +212,22 @@ export class DbProjectRow {
     constructor(data: {
         userId: string;
         name: string;
-        public: boolean;
+        private: boolean;
         image: string;
+        type: string;
+        tags?: string[];
+        description?: string;
         $id: string;
         $createdAt: string | Date;
         $updatedAt: string | Date;
     }) {
         this.userId = data.userId;
         this.name = data.name;
-        this.public = data.public;
+        this.private = data.private;
         this.image = data.image;
+        this.type = data.type;
+        this.tags = data.tags;
+        this.description = data.description;
         this.$id = data.$id;
         this.$createdAt = new Date(data.$createdAt);
         this.$updatedAt = new Date(data.$updatedAt);

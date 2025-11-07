@@ -15,22 +15,41 @@ export async function POST(request: NextRequest) {
     try {
         user.sessionCookie = (await cookies()).get('session');
 
-        const body: { name: string; private: boolean } = await request.json();
+        const body: {
+            name: string;
+            private: boolean;
+            image: string;
+            type: string;
+            tags?: string[];
+            description?: string;
+        } = await request.json();
 
         const { authenticatedUser, database, storage } =
             await user.getUserAndDbAndStorage();
 
         // create project in the db
+        const projectToCreate: {
+            userId: string;
+            name: string;
+            private: boolean;
+            image: string;
+            type: string;
+            tags?: string[];
+            description?: string;
+        } = {
+            userId: authenticatedUser.$id,
+            name: body.name,
+            private: body.private,
+            image: body.image,
+            type: body.type,
+        };
+        if (body.tags) projectToCreate.tags = body.tags;
+        if (body.description) projectToCreate.description = body.description;
         const project = await database.createRow({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
             tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
             rowId: ID.unique(),
-            data: {
-                userId: authenticatedUser.$id,
-                name: body.name,
-                public: !body.private,
-                image: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT || '',
-            },
+            data: projectToCreate,
         });
 
         defaultProjectDocs.map(async (docName) => {

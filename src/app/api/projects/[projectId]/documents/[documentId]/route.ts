@@ -60,7 +60,7 @@ export async function GET(
                     message: 'Document not found',
                 });
             }
-            if (!projects[0].public) {
+            if (projects[0].private) {
                 return Response.json({
                     status: 403,
                     message: 'Access DENIED',
