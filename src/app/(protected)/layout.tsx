@@ -33,7 +33,7 @@ export default async function ProtectedLayout({
             user: {
                 name: u.name,
                 email: u.email,
-                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.$id,
                 $id: u.$id,
             },
             projects: projects,
@@ -43,7 +43,7 @@ export default async function ProtectedLayout({
             user: {
                 name: u.name,
                 email: u.email,
-                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.name,
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.$id,
                 $id: u.$id,
             },
             projects: [],

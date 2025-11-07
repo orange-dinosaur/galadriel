@@ -8,11 +8,17 @@ import {
     UserDataFull,
 } from '@/lib/custom-types';
 
-export default async function Home() {
-    const u = await user.getUser();
+export default async function Home({
+    params,
+}: {
+    params: Promise<{ userId: string }>;
+}) {
+    const userId = (await params).userId;
+
+    /* TODO: get other user data other than id */
 
     const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/users/${u.$id}`,
+        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/users/${userId}`,
         'get'
     );
 
@@ -24,24 +30,22 @@ export default async function Home() {
             }
         );
 
-        console.log('projects: ', projects);
-
         data = UserDataFull.fromObject({
             user: {
-                name: u.name,
-                email: u.email,
-                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.$id,
-                $id: u.$id,
+                name: '',
+                email: '',
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + userId,
+                $id: userId,
             },
             projects: projects,
         });
     } else {
         data = UserDataFull.fromObject({
             user: {
-                name: u.name,
-                email: u.email,
-                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + u.$id,
-                $id: u.$id,
+                name: '',
+                email: '',
+                avatar: process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + userId,
+                $id: userId,
             },
             projects: [],
         });
@@ -74,7 +78,7 @@ export default async function Home() {
             )}
             {data.projects.length !== 0 && (
                 <div>
-                    <div>PROJECTS</div>
+                    <div>PROJECTS OF USER {data.user.$id}</div>
                     <br />
                     <div>
                         {projectList.map((p) => (
