@@ -47,6 +47,12 @@ export type NewProjectFormState = {
     description?: string;
 };
 
+export type NewFileFormState = {
+    status?: number;
+    message?: string;
+    fileName?: string;
+};
+
 export class User {
     name: string;
     email: string;

@@ -90,9 +90,6 @@ export async function updateProject(
         description: formData.get('description'),
     });
 
-    console.log('formData: ', formData);
-    console.log('projectId: ', formData.get('projectId'));
-
     const returnState: NewProjectFormState = {
         name: validatedFields.data?.name,
         private: validatedFields.data?.private,

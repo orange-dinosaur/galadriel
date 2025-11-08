@@ -45,6 +45,7 @@ import {
 } from '@/lib/custom-types';
 import { useActionState, useEffect, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
+import { DocumentActionSidebarMenuSubItem } from '../documents/document-action';
 
 export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
@@ -156,27 +157,14 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                     <CollapsibleContent>
                                         <SidebarMenuSub>
                                             {item.items?.map((subItem) => (
-                                                <SidebarMenuSubItem
-                                                    key={subItem.title}>
-                                                    <SidebarMenuSubButton
-                                                        asChild
-                                                        className={`${
-                                                            pathname ===
-                                                                subItem.url ||
-                                                            pathname.startsWith(
-                                                                `${subItem.url}`
-                                                            )
-                                                                ? 'bg-secondary'
-                                                                : ''
-                                                        }`}>
-                                                        <a
-                                                            href={`${subItem.url}`}>
-                                                            <span>
-                                                                {subItem.title}
-                                                            </span>
-                                                        </a>
-                                                    </SidebarMenuSubButton>
-                                                </SidebarMenuSubItem>
+                                                <DocumentActionSidebarMenuSubItem
+                                                    key={subItem.title}
+                                                    pathname={pathname}
+                                                    projectId={
+                                                        item.url.split('/')[1]
+                                                    }
+                                                    document={subItem}
+                                                />
                                             ))}
                                         </SidebarMenuSub>
                                     </CollapsibleContent>

@@ -8,3 +8,7 @@ export const newProjectSchema = z.object({
     tags: z.string().optional(),
     description: z.string().optional(),
 });
+
+export const newFileSchema = z.object({
+    fileName: z.string(),
+});
