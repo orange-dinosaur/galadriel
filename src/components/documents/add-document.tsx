@@ -108,6 +108,10 @@ export const AddDcoumentSidebarMenuSubItem = forwardRef<
                 document.removeEventListener('mousedown', handlePointerDown);
         }, [onDocumentSuccessfullyAdded]);
 
+        useEffect(() => {
+            inputRef.current?.focus();
+        }, []);
+
         return (
             <form ref={formRef} action={formAction} className="flex-1">
                 <input
