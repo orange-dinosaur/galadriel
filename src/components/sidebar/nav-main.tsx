@@ -62,69 +62,6 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
         }
     };
 
-    const router = useRouter();
-
-    const [isOpenProjectType, setIsOpenProjectType] = useState(false);
-    const [projectTypeValue, setprojectTypeValue] = useState('');
-
-    const initialState: NewProjectFormState = {};
-    const [state, formAction, pending] = useActionState(
-        updateProject,
-        initialState
-    );
-
-    /* tags section */
-    const [tags, setTags] = useState('');
-    const [input, setInput] = useState('');
-
-    const addTag = (tag: string) => {
-        const trimmed = tag.trim();
-
-        if (trimmed && !tags.includes(trimmed)) {
-            if (tags.length === 0) {
-                setTags(trimmed);
-            } else {
-                setTags(tags + customArraySeparator + trimmed);
-            }
-        }
-    };
-
-    const removeTag = (tag: string) => {
-        if (tags.startsWith(tag)) {
-            setTags(tags.replace(tag + customArraySeparator, ''));
-        } else {
-            setTags(tags.replace(customArraySeparator + tag, ''));
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault();
-            addTag(input);
-            setInput('');
-        }
-        if (e.key === 'Backspace' && !input && tags.length > 0) {
-            removeTag(tags[tags.length - 1]);
-        }
-    };
-
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (state && state.status === 200 && isOpen) {
-            setTags('');
-            router.refresh();
-            setIsOpen(false);
-            toast.success('Project created successfully');
-        }
-    }, [state]);
-
-    function handleDialogChange(nextOpen: boolean) {
-        setIsOpen(nextOpen);
-        setprojectTypeValue('');
-        setTags('');
-    }
-
     const items = UserDataFull.fromUserDataFullObject(data).toNavMainItems();
 
     return (

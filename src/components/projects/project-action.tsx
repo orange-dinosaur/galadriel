@@ -270,7 +270,7 @@ export function ProjectAction({
                                                       projectType.value ===
                                                       projectTypeValue
                                               )?.label
-                                            : 'Select framework...'}
+                                            : 'Select project type...'}
                                         <ChevronsUpDown className="opacity-50" />
                                     </Button>
                                 </PopoverTrigger>
@@ -394,6 +394,7 @@ export function ProjectAction({
                                 checked={isPrivate}
                                 onCheckedChange={setIsPrivate}
                                 disabled={pending}
+                                className="cursor-pointer"
                             />
                         </div>
                     </div>
