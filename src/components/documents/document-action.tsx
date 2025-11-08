@@ -1,4 +1,6 @@
-import React, { useActionState, useEffect, useState } from 'react';
+'use client';
+
+import React, { useActionState, useEffect, useRef, useState } from 'react';
 import {
     ChevronRight,
     Edit3Icon,
@@ -37,8 +39,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { deleteFile, updateFileName } from '@/db/documents';
 import { toast } from 'sonner';
 import { redirect, RedirectType, useRouter } from 'next/navigation';
-import ProjectId from '@/app/(protected)/[projectId]/page';
 import { NewFileFormState } from '@/lib/custom-types';
+import { Spinner } from '@/components/ui/spinner';
 
 export function DocumentActionSidebarMenuSubItem({
     pathname,
@@ -51,6 +53,7 @@ export function DocumentActionSidebarMenuSubItem({
 }) {
     const [isEditing, setIsEditing] = useState(false);
     const [fileName, setFileName] = useState(document.title);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const initialState: NewFileFormState = {};
     const [state, formAction, pending] = useActionState(
@@ -69,8 +72,28 @@ export function DocumentActionSidebarMenuSubItem({
         }
     }, [state]);
 
-    const handleOnSelectRename = () => {
-        setIsEditing(true);
+    useEffect(() => {
+        if (!isEditing) return;
+
+        const focusInput = () => {
+            inputRef.current?.focus();
+            inputRef.current?.select();
+        };
+
+        const frame = window.requestAnimationFrame(focusInput);
+        const timeout = window.setTimeout(focusInput, 0);
+
+        return () => {
+            window.cancelAnimationFrame(frame);
+            window.clearTimeout(timeout);
+        };
+    }, [isEditing]);
+
+    const handleOnSelectRename = (
+        event: Event | React.SyntheticEvent<Element, Event>
+    ) => {
+        event.preventDefault();
+        window.setTimeout(() => setIsEditing(true), 0);
     };
 
     const handleDeleteDocument = async (
@@ -103,12 +126,13 @@ export function DocumentActionSidebarMenuSubItem({
                         : ''
                 }`}>
                 <span className="flex justify-between">
-                    {!isEditing ? (
-                        <a href={`${document.url}`}>
+                    {!isEditing && (
+                        <a href={document.url}>
                             <span>{document.title}</span>
                         </a>
-                    ) : (
-                        <form action={formAction}>
+                    )}
+                    {isEditing && (
+                        <form action={formAction} className="flex-1">
                             <input
                                 type="hidden"
                                 id="projectId"
@@ -127,14 +151,30 @@ export function DocumentActionSidebarMenuSubItem({
                                     type="text"
                                     name="fileName"
                                     value={fileName}
+                                    ref={inputRef}
                                     onChange={(e) =>
                                         setFileName(e.target.value)
                                     }
-                                    onBlur={() => setIsEditing(false)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') {
+                                            event.preventDefault();
+                                            event.currentTarget.form?.requestSubmit();
+                                        }
+                                        if (event.key === 'Escape') {
+                                            event.preventDefault();
+                                            setIsEditing(false);
+                                            setFileName(document.title);
+                                        }
+                                    }}
+                                    className="border-0 border-b border-transparent bg-transparent px-0 py-0 text-sm font-medium focus-visible:border-primary focus-visible:ring-0 rounded-none"
                                     required
                                 />
-                                <button type="submit">
-                                    <CheckIcon className="max-w-3.5 max-h-3.5 hover:text-green-500 cursor-pointer" />
+                                <button type="submit" disabled={pending}>
+                                    {pending ? (
+                                        <Spinner />
+                                    ) : (
+                                        <CheckIcon className="max-w-3.5 max-h-3.5 hover:text-green-500 cursor-pointer" />
+                                    )}
                                 </button>
                             </div>
                         </form>
@@ -152,7 +192,9 @@ export function DocumentActionSidebarMenuSubItem({
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem
                                         className="cursor-pointer"
-                                        onSelect={() => handleOnSelectRename()}>
+                                        onSelect={(event) =>
+                                            handleOnSelectRename(event)
+                                        }>
                                         Rename
                                     </DropdownMenuItem>
 
