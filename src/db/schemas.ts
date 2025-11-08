@@ -10,5 +10,5 @@ export const newProjectSchema = z.object({
 });
 
 export const newFileSchema = z.object({
-    fileName: z.string(),
+    fileName: z.string().nonempty(),
 });

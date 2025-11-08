@@ -43,13 +43,13 @@ import {
     UserDataFull,
     UserDataFullObject,
 } from '@/lib/custom-types';
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
-import { DocumentActionSidebarMenuSubItem } from '../documents/document-action';
+import { DocumentActionSidebarMenuSubItem } from '@/components/documents/document-action';
+import { AddDcoumentSidebarMenuSubItem } from '@/components/documents/add-document';
 
 export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
-    console.log('pathname', pathname);
     const [currentProjectFromPathname, setCurrentProjectFromPathname] =
         useState(pathname.split('/')[1]);
 
@@ -71,6 +71,35 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
         }
     };
 
+    const getDefaultOpen = (projectUrl: string) =>
+        pathname === projectUrl || pathname.startsWith(`${projectUrl}/`);
+
+    const [openProjects, setOpenProjects] = useState<Record<string, boolean>>(
+        {}
+    );
+
+    const isProjectOpen = (projectId: string, projectUrl: string) =>
+        openProjects[projectId] ?? getDefaultOpen(projectUrl);
+
+    const handleToggleProject = (projectId: string, nextOpen: boolean) => {
+        setOpenProjects((prev) => ({ ...prev, [projectId]: nextOpen }));
+        if (!nextOpen && projectToAddDocumentTo === projectId) {
+            setProjectToAddDocumentTo('');
+        }
+    };
+
+    const handleAddDocumentToProject = (projectId: string) => {
+        setOpenProjects((prev) => ({ ...prev, [projectId]: true }));
+        setProjectToAddDocumentTo(projectId);
+    };
+
+    const [projectToAddDocumentTo, setProjectToAddDocumentTo] = useState('');
+    const boxRef = useRef<HTMLDivElement>(null);
+
+    const handleDocumentSuccessfullyAdded = () => {
+        setProjectToAddDocumentTo('');
+    };
+
     const items = UserDataFull.fromUserDataFullObject(data).toNavMainItems();
 
     return (
@@ -84,6 +113,13 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                         defaultOpen={
                             pathname === item.url ||
                             pathname.startsWith(`${item.url}/`)
+                        }
+                        open={isProjectOpen(item.url.split('/')[1], item.url)}
+                        onOpenChange={(nextOpen) =>
+                            handleToggleProject(
+                                item.url.split('/')[1],
+                                nextOpen
+                            )
                         }>
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip={item.name}>
@@ -102,7 +138,12 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
 
                                     {/* action buttons */}
                                     <span className="flex items-center gap-1">
-                                        <button>
+                                        <button
+                                            onClick={() =>
+                                                handleAddDocumentToProject(
+                                                    item.url.split('/')[1]
+                                                )
+                                            }>
                                             <FilePlusIcon className="max-w-3.5 max-h-3.5 hover:text-accent-foreground cursor-pointer" />
                                         </button>
 
@@ -180,6 +221,20 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                                     document={subItem}
                                                 />
                                             ))}
+
+                                            {projectToAddDocumentTo ===
+                                                item.url.split('/')[1] && (
+                                                <AddDcoumentSidebarMenuSubItem
+                                                    /* ref={boxRef} */
+                                                    pathname={pathname}
+                                                    projectId={
+                                                        item.url.split('/')[1]
+                                                    }
+                                                    onDocumentSuccessfullyAdded={
+                                                        handleDocumentSuccessfullyAdded
+                                                    }
+                                                />
+                                            )}
                                         </SidebarMenuSub>
                                     </CollapsibleContent>
                                 </>
