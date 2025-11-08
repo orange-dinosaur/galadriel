@@ -2,12 +2,9 @@
 
 import {
     ChevronRight,
-    Edit2Icon,
     Edit3Icon,
-    EditIcon,
     FilePlusIcon,
     Trash2Icon,
-    type LucideIcon,
 } from 'lucide-react';
 
 import {
@@ -37,10 +34,17 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { usePathname } from 'next/navigation';
-import { deleteProject } from '@/db/projects';
+import { usePathname, useRouter } from 'next/navigation';
+import { deleteProject, updateProject } from '@/db/projects';
 import { toast } from 'sonner';
-import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
+import {
+    customArraySeparator,
+    NewProjectFormState,
+    UserDataFull,
+    UserDataFullObject,
+} from '@/lib/custom-types';
+import { useActionState, useEffect, useState } from 'react';
+import { ProjectAction } from '@/components/projects/project-action';
 
 export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
@@ -58,6 +62,69 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
         }
     };
 
+    const router = useRouter();
+
+    const [isOpenProjectType, setIsOpenProjectType] = useState(false);
+    const [projectTypeValue, setprojectTypeValue] = useState('');
+
+    const initialState: NewProjectFormState = {};
+    const [state, formAction, pending] = useActionState(
+        updateProject,
+        initialState
+    );
+
+    /* tags section */
+    const [tags, setTags] = useState('');
+    const [input, setInput] = useState('');
+
+    const addTag = (tag: string) => {
+        const trimmed = tag.trim();
+
+        if (trimmed && !tags.includes(trimmed)) {
+            if (tags.length === 0) {
+                setTags(trimmed);
+            } else {
+                setTags(tags + customArraySeparator + trimmed);
+            }
+        }
+    };
+
+    const removeTag = (tag: string) => {
+        if (tags.startsWith(tag)) {
+            setTags(tags.replace(tag + customArraySeparator, ''));
+        } else {
+            setTags(tags.replace(customArraySeparator + tag, ''));
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addTag(input);
+            setInput('');
+        }
+        if (e.key === 'Backspace' && !input && tags.length > 0) {
+            removeTag(tags[tags.length - 1]);
+        }
+    };
+
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (state && state.status === 200 && isOpen) {
+            setTags('');
+            router.refresh();
+            setIsOpen(false);
+            toast.success('Project created successfully');
+        }
+    }, [state]);
+
+    function handleDialogChange(nextOpen: boolean) {
+        setIsOpen(nextOpen);
+        setprojectTypeValue('');
+        setTags('');
+    }
+
     const items = UserDataFull.fromUserDataFullObject(data).toNavMainItems();
 
     return (
@@ -73,12 +140,12 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                             pathname.startsWith(`${item.url}/`)
                         }>
                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild tooltip={item.title}>
+                            <SidebarMenuButton asChild tooltip={item.name}>
                                 <span className="flex items-center justify-between">
                                     <a href={item.url}>
                                         {/* TODO: Make icon visible */}
                                         {/* <item.icon /> */}
-                                        <span>{item.title}</span>
+                                        <span>{item.name}</span>
                                     </a>
 
                                     {/* action buttons */}
@@ -87,9 +154,19 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                             <FilePlusIcon className="max-w-3.5 max-h-3.5 hover:text-accent-foreground cursor-pointer" />
                                         </button>
 
-                                        <button>
+                                        <ProjectAction
+                                            action="update"
+                                            project={{
+                                                id: item.url.split('/')[1],
+                                                name: item.name,
+                                                private: item.private,
+                                                image: item.image,
+                                                type: item.type,
+                                                tags: item.tags,
+                                                description: item.description,
+                                            }}>
                                             <Edit3Icon className="max-w-3.5 max-h-3.5 hover:text-accent-foreground cursor-pointer" />
-                                        </button>
+                                        </ProjectAction>
 
                                         {/* TODO: add spinner while project is been deleted */}
                                         <AlertDialog>

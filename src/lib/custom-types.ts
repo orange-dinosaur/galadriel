@@ -1,6 +1,25 @@
 export const customArraySeparator =
     process.env.NEXT_PUBLIC_CUSTOM_ARRAY_SEPARATOR || '&%&';
 
+export const projectTypes = [
+    {
+        value: 'novel',
+        label: 'novel',
+    },
+    {
+        value: 'screenplay',
+        label: 'screenplay',
+    },
+    {
+        value: 'article',
+        label: 'article',
+    },
+    {
+        value: 'other',
+        label: 'other',
+    },
+];
+
 export type RegisterFormState = {
     status?: number;
     message?: string;
@@ -529,52 +548,6 @@ export class UserDataFull {
         );
     }
 
-    /* user: {
-        name: string;
-        email: string;
-        avatar: string;
-        $id: string;
-    };
-    projects: {
-        project: {
-            userId: string;
-            name: string;
-            private: boolean;
-            image: string;
-            type: string;
-            tags?: string[];
-            description?: string;
-            $id: string;
-            $createdAt: Date;
-            $updatedAt: Date;
-        };
-        documents: {
-            userId: string;
-            projectId: string;
-            title: string;
-            fileId: string;
-            drafts?: string[];
-            $id: string;
-            $createdAt: Date;
-            $updatedAt: Date;
-        }[];
-        drafts?: {
-            userId: string;
-            documentId: string;
-            fileIdMain: string;
-            fileIdDraft: string;
-            fileIdSeparation: string;
-            version: number;
-            $id: string;
-            $createdAt: Date;
-            $updatedAt: Date;
-        }[];
-    }[]; */
-    /* 
-    project: DbProjectRow;
-    documents: DbDocumentRow[];
-    drafts?: DbDraftRow[];
-    */
     static fromUserDataFullObject(userDataFullObject: UserDataFullObject) {
         const user = new User(userDataFullObject.user);
         const projects = userDataFullObject.projects.map((p) => ({
@@ -589,9 +562,22 @@ export class UserDataFull {
         return new UserDataFull(user, projectsArr);
     }
 
+    /* 
+    name: '',
+                                                private: false,
+                                                image: '',
+                                                type: '',
+                                                tags: [],
+                                                description: ''
+    */
     toNavMainItems() {
         const navMain: {
-            title: string;
+            name: string;
+            private: boolean;
+            image: string;
+            type: string;
+            tags: string[];
+            description: string;
             url: string;
             icon?: string;
             isActive: boolean;
@@ -600,7 +586,12 @@ export class UserDataFull {
                 url: string;
             }[];
         }[] = this.projects.map((p) => ({
-            title: 'Projects',
+            name: p.project.name,
+            private: p.project.private,
+            image: p.project.image,
+            type: p.project.type,
+            tags: p.project.tags ?? [],
+            description: p.project.description ?? '',
             url: `/${p.project.$id}`,
             icon: 'folder',
             isActive: true,

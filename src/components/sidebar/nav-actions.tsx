@@ -34,32 +34,17 @@ import {
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Check, ChevronsUpDown, SquarePenIcon, X } from 'lucide-react';
-import { customArraySeparator, NewProjectFormState } from '@/lib/custom-types';
+import {
+    customArraySeparator,
+    NewProjectFormState,
+    projectTypes,
+} from '@/lib/custom-types';
 import { useActionState, useEffect, useState, KeyboardEvent } from 'react';
 import { createNewProject } from '@/db/projects';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-const projectTypes = [
-    {
-        value: 'novel',
-        label: 'novel',
-    },
-    {
-        value: 'screenplay',
-        label: 'screenplay',
-    },
-    {
-        value: 'article',
-        label: 'article',
-    },
-    {
-        value: 'other',
-        label: 'other',
-    },
-];
 
 export function NavActions() {
     const router = useRouter();
@@ -302,22 +287,6 @@ export function NavActions() {
                                         />
 
                                         <div className="w-full flex flex-wrap gap-2">
-                                            {/* {tags.map((tag) => (
-                                                <Badge
-                                                    key={tag}
-                                                    variant="secondary"
-                                                    className="flex items-center gap-1">
-                                                    {tag}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            removeTag(tag)
-                                                        }
-                                                        className="focus:outline-none">
-                                                        <X className="w-3 h-3 text-muted-foreground cursor-pointer" />
-                                                    </button>
-                                                </Badge>
-                                            ))} */}
                                             {tags
                                                 .split(customArraySeparator)
                                                 .map((tag) => (
