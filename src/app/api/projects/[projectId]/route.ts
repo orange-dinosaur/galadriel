@@ -3,7 +3,6 @@ import { DbDocumentRow, DbProjectRow, UserData } from '@/lib/custom-types';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { Query } from 'node-appwrite';
-import { map } from 'zod';
 
 export async function GET(
     request: NextRequest,
@@ -58,7 +57,7 @@ export async function GET(
         );
 
         return Response.json({ userData });
-    } catch (error) {
+    } catch {
         return Response.json({ status: 403, message: 'Access DENIED' });
     }
 }
@@ -126,7 +125,7 @@ export async function PATCH(
             status: 200,
             message: 'Project updated successfully',
         });
-    } catch (error) {
+    } catch {
         return Response.json({
             status: 500,
             message: 'Error while updating project',
@@ -198,7 +197,7 @@ export async function DELETE(
             status: 200,
             message: 'Project deleted successfully',
         });
-    } catch (error) {
+    } catch {
         return Response.json({
             status: 500,
             message: 'Error while deleting project',

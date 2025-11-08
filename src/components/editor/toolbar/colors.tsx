@@ -2,16 +2,8 @@ import { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
 import { HighlighterIcon, PaletteIcon } from 'lucide-react';
 import { ButtonGroup } from '@/components/ui/button-group';
-import {
-    ColorResult,
-    CompactPicker,
-    TwitterPicker,
-    SketchPicker,
-} from 'react-color';
-import {
-    colorsArr,
-    defaultFontColor,
-} from '@/components/editor/text-style/colors';
+import { ColorResult, SketchPicker } from 'react-color';
+import { defaultFontColor } from '@/components/editor/text-style/colors';
 import {
     DropdownMenu,
     DropdownMenuTrigger,

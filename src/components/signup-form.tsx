@@ -16,6 +16,7 @@ import { registerUser } from '@/auth/register';
 import { RegisterFormState } from '@/lib/custom-types';
 import { signupWithGoogle } from '@/auth/oauth';
 import { Spinner } from '@/components/ui/spinner';
+import Link from 'next/link';
 
 export function SignupForm({
     className,
@@ -32,7 +33,7 @@ export function SignupForm({
             <form action={formAction}>
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <a
+                        <Link
                             href="/"
                             className="flex flex-col items-center gap-2 font-medium">
                             <div className="flex size-10 items-center justify-center rounded-md">
@@ -44,13 +45,13 @@ export function SignupForm({
                                 />
                             </div>
                             <span className="sr-only">Galadriel</span>
-                        </a>
+                        </Link>
                         <h1 className="text-xl font-bold">
                             Welcome to Galadriel
                         </h1>
                         <FieldDescription>
                             Already have an account?{' '}
-                            <a href="/login">Sign in</a>
+                            <Link href="/login">Sign in</Link>
                         </FieldDescription>
                     </div>
                     <Field>

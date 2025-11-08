@@ -1,14 +1,8 @@
 import { user } from '@/auth/user';
-import {
-    DbDocumentRow,
-    DbProjectRow,
-    Project,
-    UserData,
-} from '@/lib/custom-types';
+import { DbDocumentRow, DbProjectRow, Project } from '@/lib/custom-types';
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { Query } from 'node-appwrite';
-import { map } from 'zod';
 
 export async function GET(
     request: NextRequest,
@@ -75,7 +69,7 @@ export async function GET(
             statusText: 'OK'
         }); */
         return Response.json({ projectsObject });
-    } catch (error) {
+    } catch {
         return Response.json({
             status: 500,
             message: 'Error while fetching data',

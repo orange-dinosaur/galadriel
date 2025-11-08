@@ -135,16 +135,12 @@ export class AppSidebarData {
             email: string;
             avatar: string;
         },
-        documents: DbDocumentRow[],
-        currentPath = ''
+        documents: DbDocumentRow[]
     ): AppSidebarData {
-        return new AppSidebarData(
-            user,
-            this.buildNavMain(documents, currentPath)
-        );
+        return new AppSidebarData(user, this.buildNavMain(documents));
     }
 
-    private static buildNavMain(documents: DbDocumentRow[], currentPath = '') {
+    private static buildNavMain(documents: DbDocumentRow[]) {
         if (!documents || documents.length === 0) return [];
 
         // Group by projectId

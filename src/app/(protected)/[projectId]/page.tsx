@@ -1,5 +1,5 @@
 import axiosInstance from '@/lib/axiosInstance';
-import { DbDocumentRow, UserData } from '@/lib/custom-types';
+import { UserData } from '@/lib/custom-types';
 
 export default async function ProjectId({
     params,
@@ -29,7 +29,7 @@ export default async function ProjectId({
             <div>DOCUMENTS OF PROJECT {projectId}</div>
             <br />
             <div>
-                {documents.map((doc: any) => (
+                {documents.map((doc) => (
                     <a href={`/${projectId}/${doc.$id}`} key={doc.$id}>
                         <div key={doc.$id}>{doc.$id}</div>
                     </a>

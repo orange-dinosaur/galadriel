@@ -16,6 +16,7 @@ import { useActionState } from 'react';
 import { createSession } from '@/auth/session';
 import { signupWithGoogle } from '@/auth/oauth';
 import { Spinner } from '@/components/ui/spinner';
+import Link from 'next/link';
 
 export function LoginForm({
     className,
@@ -32,7 +33,7 @@ export function LoginForm({
             <form action={formAction}>
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <a
+                        <Link
                             href="/"
                             className="flex flex-col items-center gap-2 font-medium">
                             <div className="flex size-10 items-center justify-center rounded-md">
@@ -44,13 +45,13 @@ export function LoginForm({
                                 />
                             </div>
                             <span className="sr-only">Galadriel</span>
-                        </a>
+                        </Link>
                         <h1 className="text-xl font-bold">
                             Welcome to Galadriel
                         </h1>
                         <FieldDescription>
                             Don&apos;t have an account?{' '}
-                            <a href="/register">Register</a>
+                            <Link href="/register">Register</Link>
                         </FieldDescription>
                     </div>
                     <Field>

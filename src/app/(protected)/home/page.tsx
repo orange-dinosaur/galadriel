@@ -1,12 +1,6 @@
 import { user } from '@/auth/user';
 import axiosInstance from '@/lib/axiosInstance';
-import {
-    AppSidebarData,
-    DbDocumentRow,
-    Project,
-    UserData,
-    UserDataFull,
-} from '@/lib/custom-types';
+import { Project, UserDataFull } from '@/lib/custom-types';
 
 export default async function Home() {
     const u = await user.getUser();

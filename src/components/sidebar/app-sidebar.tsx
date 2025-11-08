@@ -10,26 +10,9 @@ import {
     SidebarFooter,
 } from '@/components/ui/sidebar';
 import { NavActions } from './nav-actions';
-import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
+import { UserDataFullObject } from '@/lib/custom-types';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-    /* data: {
-        user: {
-            name: string;
-            email: string;
-            avatar: string;
-        };
-        navMain: {
-            title: string;
-            url: string;
-            icon?: string;
-            isActive: boolean;
-            items?: {
-                title: string;
-                url: string;
-            }[];
-        }[];
-    }; */
     data: UserDataFullObject;
 }
 

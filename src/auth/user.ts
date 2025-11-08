@@ -131,7 +131,7 @@ export const user: {
 
             const userData = await account.get();
             user.user = new AuthenticatedUser(userData);
-        } catch (error) {
+        } catch {
             user.user = AuthenticatedUser.empty();
             user.sessionCookie = null;
         }
@@ -151,7 +151,7 @@ export const user: {
             user.user = new AuthenticatedUser(userData);
 
             user.database = database;
-        } catch (error) {
+        } catch {
             user.user = AuthenticatedUser.empty();
             user.sessionCookie = null;
         }
@@ -173,7 +173,7 @@ export const user: {
             user.database = database;
 
             user.storage = storage;
-        } catch (error) {
+        } catch {
             user.user = AuthenticatedUser.empty();
             user.sessionCookie = null;
         }

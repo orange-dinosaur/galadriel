@@ -92,7 +92,7 @@ export async function POST(
             status: 200,
             message: 'Project created successfully',
         });
-    } catch (error) {
+    } catch {
         return Response.json({
             status: 500,
             message: 'Error while creating project',

@@ -1,41 +1,19 @@
 'use client';
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
-import {
-    ChevronRight,
-    Edit3Icon,
-    FilePlusIcon,
-    Trash2Icon,
-    MoreHorizontalIcon,
-    CheckCheckIcon,
-    CheckIcon,
-} from 'lucide-react';
+import { MoreHorizontalIcon, CheckIcon } from 'lucide-react';
 import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { deleteFile, updateFileName } from '@/db/documents';
 import { toast } from 'sonner';
 import { redirect, RedirectType, useRouter } from 'next/navigation';

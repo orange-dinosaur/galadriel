@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
             status: 200,
             message: 'Project created successfully',
         });
-    } catch (error) {
+    } catch {
         return Response.json({
             status: 500,
             message: 'Error while creating project',

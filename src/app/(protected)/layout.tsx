@@ -3,7 +3,7 @@ import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import axiosInstance from '@/lib/axiosInstance';
-import { AppSidebarData, Project, UserDataFull } from '@/lib/custom-types';
+import { Project, UserDataFull } from '@/lib/custom-types';
 
 export const iframeHeight = '800px';
 

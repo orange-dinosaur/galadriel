@@ -14,9 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import {
     Command,
-    CommandEmpty,
     CommandGroup,
-    CommandInput,
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
@@ -26,7 +24,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { Check, ChevronsUpDown, Key, SquarePenIcon, X } from 'lucide-react';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
 import {
     customArraySeparator,
     NewProjectFormState,

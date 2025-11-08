@@ -42,7 +42,7 @@ export async function createSession(
             expires: new Date(session.expire),
             path: '/',
         });
-    } catch (error) {
+    } catch {
         returnState.status = 401;
         returnState.message = 'Invalid email or password';
         return returnState;
@@ -59,7 +59,7 @@ export async function deleteSession() {
         await account.deleteSession({
             sessionId: 'current',
         });
-    } catch (error) {}
+    } catch {}
 
     (await cookies()).delete('session');
     user.user = AuthenticatedUser.empty();

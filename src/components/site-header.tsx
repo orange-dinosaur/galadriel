@@ -1,16 +1,8 @@
 'use client';
 
-import { SidebarIcon } from 'lucide-react';
+import { Link, SidebarIcon } from 'lucide-react';
 
 import { SearchForm } from '@/components/search-form';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -31,14 +23,14 @@ export function SiteHeader() {
                 </Button>
                 <Separator orientation="vertical" className="mr-2 h-4" />
                 <div className="flex size-10 items-center justify-center rounded-md">
-                    <a href="/home">
+                    <Link href="/home">
                         <Image
                             src="/logo.png"
                             width={500}
                             height={500}
                             alt="Galadriel logo"
                         />
-                    </a>
+                    </Link>
                 </div>
                 <SearchForm className="w-full sm:ml-auto sm:w-auto" />
             </div>

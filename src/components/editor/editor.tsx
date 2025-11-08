@@ -16,8 +16,6 @@ import Image from '@tiptap/extension-image';
 import ImageResize from 'tiptap-extension-resize-image';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import EditorToolbar from '@/components/editor/toolbar/toolbar';
-import EditorBubbleMenu from '@/components/editor/menu-bubble/menu-bubble';
-import EditorFloatingMenu from '@/components/editor/menu-floating/menu-floating';
 import { defaultFontFamily } from '@/components/editor/text-style/fonts';
 import { defaultFontColor } from '@/components/editor/text-style/colors';
 import { useEffect } from 'react';

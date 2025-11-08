@@ -7,7 +7,7 @@ import {
 } from '@/lib/custom-types';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
-import { ID, Query } from 'node-appwrite';
+import { Query } from 'node-appwrite';
 
 export async function GET(
     request: NextRequest,
@@ -89,7 +89,7 @@ export async function GET(
         );
 
         return Response.json({ fullDocument });
-    } catch (error) {
+    } catch {
         return Response.json({ status: 403, message: 'Access DENIED' });
     }
 }
@@ -195,7 +195,7 @@ export async function PATCH(
             status: 200,
             message: 'File updated successfully',
         });
-    } catch (error) {
+    } catch {
         return Response.json({ status: 500, message: 'Something went wrong' });
     }
 }
@@ -257,7 +257,7 @@ export async function DELETE(
             status: 200,
             message: 'Document delete successfully',
         });
-    } catch (error) {
+    } catch {
         return Response.json({
             status: 500,
             message: 'Error while deleting document',

@@ -1,7 +1,5 @@
 import { user } from '@/auth/user';
-import { NextRequest } from 'next/server';
-
-const { NextResponse } = require('next/server');
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
     const u = await user.getUser();

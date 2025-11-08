@@ -20,8 +20,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import {
     AlertDialog,
@@ -34,16 +32,11 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { usePathname, useRouter } from 'next/navigation';
-import { deleteProject, updateProject } from '@/db/projects';
+import { usePathname } from 'next/navigation';
+import { deleteProject } from '@/db/projects';
 import { toast } from 'sonner';
-import {
-    customArraySeparator,
-    NewProjectFormState,
-    UserDataFull,
-    UserDataFullObject,
-} from '@/lib/custom-types';
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
+import { useEffect, useRef, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
 import { DocumentActionSidebarMenuSubItem } from '@/components/documents/document-action';
 import { AddDcoumentSidebarMenuSubItem } from '@/components/documents/add-document';
@@ -94,7 +87,6 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
     };
 
     const [projectToAddDocumentTo, setProjectToAddDocumentTo] = useState('');
-    const boxRef = useRef<HTMLDivElement>(null);
 
     const handleDocumentSuccessfullyAdded = () => {
         setProjectToAddDocumentTo('');
@@ -226,7 +218,6 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                                 item.url.split('/')[1] && (
                                                 <AddDcoumentSidebarMenuSubItem
                                                     /* ref={boxRef} */
-                                                    pathname={pathname}
                                                     projectId={
                                                         item.url.split('/')[1]
                                                     }
