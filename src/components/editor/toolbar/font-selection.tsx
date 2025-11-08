@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
@@ -24,24 +24,6 @@ type FontFamilySelectionProps = {
 
 const FontFamilySelection = ({ editor }: FontFamilySelectionProps) => {
     const [open, setOpen] = useState(false);
-    const [, forceUpdate] = useState(0); // used only to trigger re-render
-
-    useEffect(() => {
-        if (!editor) return;
-
-        const refresh = () => {
-            // advance a dummy counter so React re-renders
-            forceUpdate((count) => count + 1);
-        };
-
-        editor.on('selectionUpdate', refresh);
-        editor.on('transaction', refresh);
-
-        return () => {
-            editor.off('selectionUpdate', refresh);
-            editor.off('transaction', refresh);
-        };
-    }, [editor]);
 
     const currentFont =
         editor?.getAttributes('textStyle').fontFamily ?? defaultFontFamily;
@@ -53,7 +35,6 @@ const FontFamilySelection = ({ editor }: FontFamilySelectionProps) => {
 
         editor?.chain().focus().setFontFamily(fontToApply).run();
         setOpen(false);
-        forceUpdate((count) => count + 1); // immediate update for the label/check
     };
 
     return (

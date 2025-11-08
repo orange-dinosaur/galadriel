@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { defaultFontFamily, fonts } from '@/components/editor/text-style/fonts';
 import ToolbarUndoRedo from '@/components/editor/toolbar/undo-redo';
 import FontFamilySelection from '@/components/editor/toolbar/font-selection';
 import ToolbarColors from '@/components/editor/toolbar/colors';
@@ -20,38 +19,38 @@ const EditorToolbar = ({
     documentId,
     editor,
 }: EditorToolbarProps) => {
-    const [open, setOpen] = useState(false);
-    const [, forceUpdate] = useState(0); // used only to trigger re-render
+    const [, setRenderTick] = useState(0); // used only to trigger re-render
 
     useEffect(() => {
         if (!editor) return;
 
-        const refresh = () => {
-            // advance a dummy counter so React re-renders
-            forceUpdate((count) => count + 1);
+        let frame: number | null = null;
+        const scheduleRefresh = () => {
+            if (frame !== null) return;
+
+            frame = window.requestAnimationFrame(() => {
+                frame = null;
+                setRenderTick((count) => count + 1);
+            });
         };
 
-        editor.on('selectionUpdate', refresh);
-        editor.on('transaction', refresh);
+        const events: Array<Parameters<Editor['on']>[0]> = [
+            'selectionUpdate',
+            'transaction',
+            'focus',
+            'blur',
+        ];
+
+        events.forEach((event) => editor.on(event, scheduleRefresh));
 
         return () => {
-            editor.off('selectionUpdate', refresh);
-            editor.off('transaction', refresh);
+            if (frame !== null) {
+                window.cancelAnimationFrame(frame);
+            }
+
+            events.forEach((event) => editor.off(event, scheduleRefresh));
         };
     }, [editor]);
-
-    const currentFont =
-        editor?.getAttributes('textStyle').fontFamily ?? defaultFontFamily;
-
-    const handleSelect = (fontValue: string) => {
-        const fontToApply =
-            fonts.find((font) => font.value === fontValue)?.value ??
-            defaultFontFamily;
-
-        editor?.chain().focus().setFontFamily(fontToApply).run();
-        setOpen(false);
-        forceUpdate((count) => count + 1); // immediate update for the label/check
-    };
 
     return (
         <div className="mx-auto flex w-full justify-center items-center gap-3 px-6 py-2">
