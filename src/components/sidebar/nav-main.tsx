@@ -49,6 +49,14 @@ import { DocumentActionSidebarMenuSubItem } from '../documents/document-action';
 
 export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
+    console.log('pathname', pathname);
+    const [currentProjectFromPathname, setCurrentProjectFromPathname] =
+        useState(pathname.split('/')[1]);
+
+    useEffect(() => {
+        setCurrentProjectFromPathname(pathname.split('/')[1]);
+        console.log('currentProjectFromPathname', currentProjectFromPathname);
+    }, [pathname]);
 
     const handleDeleteProject = async (projectUrl: string) => {
         const projectId = projectUrl.split('/')[1];
@@ -79,7 +87,13 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                         }>
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip={item.name}>
-                                <span className="flex items-center justify-between">
+                                <span
+                                    className={`flex items-center justify-between ${
+                                        currentProjectFromPathname ===
+                                        item.url.split('/')[1]
+                                            ? 'bg-secondary'
+                                            : ''
+                                    }`}>
                                     <a href={item.url}>
                                         {/* TODO: Make icon visible */}
                                         {/* <item.icon /> */}
@@ -148,7 +162,7 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                 <>
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuAction className="data-[state=open]:rotate-90">
-                                            <ChevronRight />
+                                            <ChevronRight className="cursor-pointer" />
                                             <span className="sr-only">
                                                 Toggle
                                             </span>
