@@ -45,15 +45,16 @@ import { Spinner } from '@/components/ui/spinner';
 export function DocumentActionSidebarMenuSubItem({
     pathname,
     projectId,
-    document,
+    document: doc,
 }: {
     pathname: string;
     projectId: string;
     document: { title: string; url: string };
 }) {
     const [isEditing, setIsEditing] = useState(false);
-    const [fileName, setFileName] = useState(document.title);
+    const [fileName, setFileName] = useState(doc.title);
     const inputRef = useRef<HTMLInputElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
 
     const initialState: NewFileFormState = {};
     const [state, formAction, pending] = useActionState(
@@ -89,6 +90,27 @@ export function DocumentActionSidebarMenuSubItem({
         };
     }, [isEditing]);
 
+    useEffect(() => {
+        if (!isEditing) return;
+
+        const handlePointerDown = (event: Event) => {
+            const target = event.target as Node;
+            if (formRef.current && !formRef.current.contains(target)) {
+                setIsEditing(false);
+                setFileName(doc.title);
+            }
+        };
+
+        const domDocument = window.document;
+        domDocument.addEventListener('pointerdown', handlePointerDown, true);
+        return () =>
+            domDocument.removeEventListener(
+                'pointerdown',
+                handlePointerDown,
+                true
+            );
+    }, [isEditing, doc.title]);
+
     const handleOnSelectRename = (
         event: Event | React.SyntheticEvent<Element, Event>
     ) => {
@@ -116,23 +138,26 @@ export function DocumentActionSidebarMenuSubItem({
     };
 
     return (
-        <SidebarMenuSubItem key={document.title}>
+        <SidebarMenuSubItem key={doc.title}>
             <SidebarMenuSubButton
                 asChild
                 className={`${
-                    pathname === document.url ||
-                    pathname.startsWith(`${document.url}`)
+                    pathname === doc.url ||
+                    pathname.startsWith(`${doc.url}`)
                         ? 'bg-secondary'
                         : ''
                 }`}>
                 <span className="flex justify-between">
                     {!isEditing && (
-                        <a href={document.url}>
-                            <span>{document.title}</span>
+                        <a href={doc.url}>
+                            <span>{doc.title}</span>
                         </a>
                     )}
                     {isEditing && (
-                        <form action={formAction} className="flex-1">
+                        <form
+                            ref={formRef}
+                            action={formAction}
+                            className="flex-1">
                             <input
                                 type="hidden"
                                 id="projectId"
@@ -143,7 +168,7 @@ export function DocumentActionSidebarMenuSubItem({
                                 type="hidden"
                                 id="documentId"
                                 name="documentId"
-                                value={document.url.split('/')[2] ?? ''}
+                                value={doc.url.split('/')[2] ?? ''}
                             />
                             <div className="flex">
                                 <Input
@@ -163,7 +188,7 @@ export function DocumentActionSidebarMenuSubItem({
                                         if (event.key === 'Escape') {
                                             event.preventDefault();
                                             setIsEditing(false);
-                                            setFileName(document.title);
+                                            setFileName(doc.title);
                                         }
                                     }}
                                     className="border-0 border-b border-transparent bg-transparent px-0 py-0 text-sm font-medium focus-visible:border-primary focus-visible:ring-0 rounded-none"
@@ -203,7 +228,7 @@ export function DocumentActionSidebarMenuSubItem({
                                         onSelect={() =>
                                             handleDeleteDocument(
                                                 projectId,
-                                                document.url.split('/')[2]
+                                                doc.url.split('/')[2]
                                             )
                                         }>
                                         Delete
