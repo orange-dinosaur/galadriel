@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { useActionState } from 'react';
-import { registerUser } from '@/auth/register';
+import { registerUser } from '@/actions/register';
 import { RegisterFormState } from '@/lib/custom-types';
 import { signupWithGoogle } from '@/auth/oauth';
 import { Spinner } from '@/components/ui/spinner';

@@ -16,7 +16,7 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { deleteSession } from '@/auth/session';
+import { deleteSession } from '@/actions/session';
 
 export function NavUser({
     user,

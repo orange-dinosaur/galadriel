@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { signupSchema } from '@/auth/schemas';
+import { signupSchema } from '@/actions/schemas';
 import { createAdminClient } from '@/appwrite/config';
 import { ID } from 'node-appwrite';
 import { cookies } from 'next/headers';

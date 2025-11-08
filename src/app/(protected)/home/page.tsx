@@ -1,22 +1,18 @@
 import { user } from '@/auth/user';
+import { getAllProjectsOfUser } from '@/db/projects';
 import axiosInstance from '@/lib/axiosInstance';
 import { Project, UserDataFull } from '@/lib/custom-types';
 
 export default async function Home() {
     const u = await user.getUser();
 
-    const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/users/${u.$id}`,
-        'get'
-    );
+    const response = await getAllProjectsOfUser(u.$id);
 
     let data: UserDataFull;
-    if (!response.data.status && response.data.projectsObject) {
-        const projects: Project[] = response.data.projectsObject.map(
-            (project: any) => {
-                return Project.fromObject(project);
-            }
-        );
+    if (response.status === 200 && response.data) {
+        const projects: Project[] = response.data.map((project: any) => {
+            return Project.fromObject(project);
+        });
 
         data = UserDataFull.fromObject({
             user: {

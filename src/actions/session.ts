@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { createAdminClient, createSessionClient } from '@/appwrite/config';
 import { redirect } from 'next/navigation';
 import { AuthenticatedUser, user } from '@/auth/user';
-import { loginSchema } from '@/auth/schemas';
+import { loginSchema } from '@/actions/schemas';
 import { LoginFormState } from '@/lib/custom-types';
 
 export async function createSession(

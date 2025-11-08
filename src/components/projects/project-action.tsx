@@ -31,7 +31,7 @@ import {
     projectTypes,
 } from '@/lib/custom-types';
 import { useActionState, useEffect, useState, KeyboardEvent } from 'react';
-import { createNewProject, updateProject } from '@/db/projects';
+import { createNewProject, updateProject } from '@/actions/projects';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { useRouter } from 'next/navigation';

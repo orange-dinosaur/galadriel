@@ -33,7 +33,7 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { usePathname } from 'next/navigation';
-import { deleteProject } from '@/db/projects';
+import { deleteProject } from '@/actions/projects';
 import { toast } from 'sonner';
 import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
 import { useEffect, useRef, useState } from 'react';

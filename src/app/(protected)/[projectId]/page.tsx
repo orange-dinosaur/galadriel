@@ -1,3 +1,4 @@
+import { getProjectById } from '@/db/projects';
 import axiosInstance from '@/lib/axiosInstance';
 import { UserData } from '@/lib/custom-types';
 
@@ -8,12 +9,9 @@ export default async function ProjectId({
 }) {
     const projectId = (await params).projectId;
 
-    const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}`,
-        'get'
-    );
+    const response = await getProjectById(projectId);
 
-    if (response.data.status && response.data.status !== 200) {
+    if ((response.status && response.status !== 200) || !response.data) {
         return (
             <div>
                 <div>PROEJCT {projectId} NOT FOUND</div>
@@ -21,7 +19,7 @@ export default async function ProjectId({
         );
     }
 
-    const resData: UserData = UserData.fromObject(response.data.userData);
+    const resData: UserData = UserData.fromObject(response.data);
     const documents = resData.data[0].documents;
 
     return (

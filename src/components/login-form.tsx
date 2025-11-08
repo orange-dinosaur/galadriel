@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { LoginFormState } from '@/lib/custom-types';
 import { useActionState } from 'react';
-import { createSession } from '@/auth/session';
+import { createSession } from '@/actions/session';
 import { signupWithGoogle } from '@/auth/oauth';
 import { Spinner } from '@/components/ui/spinner';
 import Link from 'next/link';

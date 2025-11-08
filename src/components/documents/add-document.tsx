@@ -3,7 +3,7 @@
 import React, { useActionState, useEffect, useRef, useState } from 'react';
 import { CheckIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { createNewFile } from '@/db/documents';
+import { createNewFile } from '@/actions/documents';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { NewFileFormState } from '@/lib/custom-types';

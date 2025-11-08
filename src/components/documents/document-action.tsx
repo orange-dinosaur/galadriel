@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { deleteFile, updateFileName } from '@/db/documents';
+import { deleteFile, updateFileName } from '@/actions/documents';
 import { toast } from 'sonner';
 import { redirect, RedirectType, useRouter } from 'next/navigation';
 import { NewFileFormState } from '@/lib/custom-types';

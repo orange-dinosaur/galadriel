@@ -1,12 +1,12 @@
 'use client';
 
-import { Link, SidebarIcon } from 'lucide-react';
-
+import { SidebarIcon } from 'lucide-react';
 import { SearchForm } from '@/components/search-form';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export function SiteHeader() {
     const { toggleSidebar } = useSidebar();
@@ -15,7 +15,7 @@ export function SiteHeader() {
         <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
             <div className="flex h-(--header-height) w-full items-center gap-2 px-4">
                 <Button
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                     variant="ghost"
                     size="icon"
                     onClick={toggleSidebar}>

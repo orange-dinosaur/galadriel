@@ -3,7 +3,7 @@
 import { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
 import { SaveIcon } from 'lucide-react';
-import { updateFileContent } from '@/db/documents';
+import { updateFileContent } from '@/actions/documents';
 import { toast } from 'sonner';
 import { useTransition } from 'react';
 

@@ -1,171 +1,341 @@
-'use server';
+import { user } from '@/auth/user';
+import { cookies } from 'next/headers';
+import { ID, Query } from 'node-appwrite';
+import { DbResponse } from '@/db/response';
+import {
+    DbDocumentRow,
+    DbProjectRow,
+    Project,
+    UserData,
+} from '@/lib/custom-types';
 
-import { newProjectSchema } from '@/db/schemas';
-import axiosInstance from '@/lib/axiosInstance';
-import { customArraySeparator, NewProjectFormState } from '@/lib/custom-types';
+export type NewProjectProps = {
+    userId?: string;
+    name: string;
+    private: boolean;
+    image: string;
+    type: string;
+    tags?: string[];
+    description?: string;
+};
 
-export async function createNewProject(
-    initialState: any,
-    formData: FormData
-): Promise<NewProjectFormState> {
-    const validatedFields = newProjectSchema.safeParse({
-        name: formData.get('name'),
-        private: formData.get('private') === 'on' ? true : false,
-        image: formData.get('image'),
-        type: formData.get('type'),
-        tags: formData.get('tags'),
-        description: formData.get('description'),
-    });
+export type UpdateProjectProps = {
+    name?: string;
+    private?: boolean;
+    image?: string;
+    type?: string;
+    tags?: string[];
+    description?: string;
+};
 
-    const returnState: NewProjectFormState = {
-        name: validatedFields.data?.name,
-        private: validatedFields.data?.private,
-        image: validatedFields.data?.image,
-        type: validatedFields.data?.type,
-        description: validatedFields.data?.description,
-    };
-    if (validatedFields.data?.tags) {
-        returnState.tags =
-            validatedFields.data.tags.split(customArraySeparator);
+const defaultProjectDocs = [
+    'Title page',
+    'Synopsis',
+    'Text',
+    'Notes',
+    'Characters',
+];
+
+export const createNewProject = async (
+    props: NewProjectProps
+): Promise<DbResponse> => {
+    try {
+        user.sessionCookie = (await cookies()).get('session');
+
+        const { authenticatedUser, database, storage } =
+            await user.getUserAndDbAndStorage();
+
+        // create project in the db
+        const projectToCreate: NewProjectProps = {
+            userId: authenticatedUser.$id,
+            name: props.name,
+            private: props.private,
+            image: props.image,
+            type: props.type,
+        };
+        if (props.tags) projectToCreate.tags = props.tags;
+        if (props.description) projectToCreate.description = props.description;
+
+        const project = await database.createRow({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
+            rowId: ID.unique(),
+            data: projectToCreate,
+        });
+
+        defaultProjectDocs.map(async (docName) => {
+            // create file
+            const fileId = ID.unique();
+            const createdFile = await storage.createFile({
+                bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+                fileId: fileId,
+                file: new File(
+                    [
+                        new Blob(
+                            [
+                                JSON.stringify({
+                                    type: 'doc',
+                                    content: [{ type: 'paragraph' }],
+                                }),
+                            ],
+                            {
+                                type: 'application/json',
+                            }
+                        ),
+                    ],
+                    docName + '.json',
+                    {
+                        type: 'application/json',
+                    }
+                ),
+            });
+
+            // create document in the db
+            await database.createRow({
+                databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+                tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+                rowId: ID.unique(),
+                data: {
+                    userId: authenticatedUser.$id,
+                    projectId: project.$id,
+                    title: docName,
+                    fileId: createdFile.$id,
+                },
+            });
+        });
+
+        return new DbResponse(200, 'Project created successfully');
+    } catch {
+        return new DbResponse(500, 'Internal server error');
     }
+};
 
-    if (!validatedFields.success) {
-        // TODO: return only error message
-        returnState.status = 400;
-        returnState.message = validatedFields.error.message;
-        return returnState;
+export const getProjectById = async (
+    projectId: string
+): Promise<DbResponse> => {
+    try {
+        user.sessionCookie = (await cookies()).get('session');
+
+        const { authenticatedUser, database } = await user.getUserAndDb();
+
+        const queries: string[] = [];
+        queries.push(Query.equal('$id', projectId));
+
+        const projectRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
+            queries: queries,
+        });
+        const projects = DbProjectRow.fromObject(projectRows.rows);
+
+        if (projects.length === 0) {
+            return new DbResponse(404, 'Project not found');
+        }
+
+        if (projects[0].private) {
+            if (authenticatedUser?.$id !== projects[0].userId) {
+                return new DbResponse(403, 'Access DENIED');
+            }
+        }
+
+        queries.length = 0;
+        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.orderDesc('$updatedAt'));
+
+        // get all user documents
+        const docRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            queries: queries,
+        });
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+
+        const userData: UserData = UserData.fromDbSearchResult(
+            projects,
+            documents
+        );
+
+        return new DbResponse(200, 'OK', userData);
+    } catch {
+        return new DbResponse(500, 'Internal server error');
     }
+};
 
-    if (validatedFields.data?.type === '') {
-        // TODO: return only error message
-        returnState.status = 400;
-        returnState.message = 'type is mandatory';
-        return returnState;
+export const updateProjectById = async (
+    projectId: string,
+    newProjectData: UpdateProjectProps
+): Promise<DbResponse> => {
+    try {
+        user.sessionCookie = (await cookies()).get('session');
+
+        const { authenticatedUser, database } = await user.getUserAndDb();
+
+        // get the user project and then update it
+        const projectRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID as string,
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS as string,
+            queries: [Query.equal('$id', projectId)],
+        });
+        const projects = DbProjectRow.fromObject(projectRows.rows);
+
+        if (projects.length === 0) {
+            return new DbResponse(404, 'Project not found');
+        }
+
+        if (authenticatedUser?.$id !== projects[0].userId) {
+            return new DbResponse(403, 'Access DENIED');
+        }
+
+        await database.updateRow({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
+            rowId: projectId,
+            data: {
+                name: newProjectData.name
+                    ? newProjectData.name
+                    : projects[0].name,
+                private: newProjectData.private
+                    ? newProjectData.private
+                    : projects[0].private,
+                image: newProjectData.image
+                    ? newProjectData.image
+                    : projects[0].image,
+                type: newProjectData.type
+                    ? newProjectData.type
+                    : projects[0].type,
+                tags: newProjectData.tags
+                    ? newProjectData.tags
+                    : projects[0].tags,
+                description: newProjectData.description
+                    ? newProjectData.description
+                    : projects[0].description,
+            },
+        });
+
+        return new DbResponse(200, 'Project updated successfully');
+    } catch {
+        return new DbResponse(500, 'Internal server error');
     }
+};
 
-    const body: {
-        name: string;
-        private: boolean;
-        image: string;
-        type: string;
-        tags?: string[];
-        description?: string;
-    } = {
-        name: validatedFields.data.name,
-        private: validatedFields.data.private,
-        image:
-            process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + validatedFields.data.name,
-        type: validatedFields.data.type,
-    };
-    if (validatedFields.data.image) {
-        body.image = validatedFields.data.image;
+export const DeleteProjectById = async (
+    projectId: string
+): Promise<DbResponse> => {
+    try {
+        user.sessionCookie = (await cookies()).get('session');
+
+        const { authenticatedUser, database, storage } =
+            await user.getUserAndDbAndStorage();
+
+        // get the user project and then update it
+        const projectRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID as string,
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS as string,
+            queries: [Query.equal('$id', projectId)],
+        });
+        const projects = DbProjectRow.fromObject(projectRows.rows);
+
+        if (projects.length === 0) {
+            return new DbResponse(404, 'Project not found');
+        }
+
+        if (authenticatedUser?.$id !== projects[0].userId) {
+            return new DbResponse(403, 'Access DENIED');
+        }
+
+        const queries: string[] = [];
+        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.equal('userId', authenticatedUser.$id));
+
+        const docRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            queries: queries,
+        });
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+
+        // delete the project
+        await database.deleteRow({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
+            rowId: projectId,
+        });
+
+        /* TODO: try to understand why batch delete does not work */
+        documents.map(async (document) => {
+            await database.deleteRow({
+                databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+                tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+                rowId: document.$id,
+            });
+
+            await storage.deleteFile({
+                bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+                fileId: document.fileId || '',
+            });
+        });
+
+        return new DbResponse(200, 'Project deleted successfully');
+    } catch {
+        return new DbResponse(500, 'Internal server error');
     }
-    if (validatedFields.data.tags)
-        body.tags = validatedFields.data.tags.split(customArraySeparator);
-    if (validatedFields.data.description)
-        body.description = validatedFields.data.description;
-    const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/`,
-        'post',
-        body
-    );
+};
 
-    if (response.status !== 200) {
-        return { status: response.status, message: response.data.message };
+export const getAllProjectsOfUser = async (
+    userId: string
+): Promise<DbResponse> => {
+    try {
+        user.sessionCookie = (await cookies()).get('session');
+
+        const { authenticatedUser, database } = await user.getUserAndDb();
+
+        const queries: string[] = [];
+        queries.push(Query.equal('userId', userId));
+        queries.push(Query.orderDesc('$updatedAt'));
+        if (authenticatedUser?.$id !== userId) {
+            queries.push(Query.equal('public', true));
+        }
+
+        // get the user projects
+        const projectRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
+            queries: queries,
+        });
+        const projects = DbProjectRow.fromObject(projectRows.rows);
+
+        if (projects.length === 0) {
+            return new DbResponse(404, 'No projects found');
+        }
+
+        queries.length = 0;
+        queries.push(
+            Query.contains(
+                'projectId',
+                projects.map((project) => project.$id)
+            )
+        );
+        queries.push(Query.equal('userId', userId));
+        queries.push(Query.orderDesc('$updatedAt'));
+
+        // get all user documents
+        const docRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            queries: queries,
+        });
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+
+        const projectsObject: Project[] = [];
+        projects.map((project) => {
+            const projectDocuments = documents.filter(
+                (doc) => doc.projectId === project.$id
+            );
+            projectsObject.push(new Project(project, projectDocuments));
+        });
+
+        return new DbResponse(200, 'OK', projectsObject);
+    } catch {
+        return new DbResponse(500, 'Internal server error');
     }
-
-    return { status: 200, message: 'Project created successfully' };
-}
-
-export async function updateProject(
-    initialState: any,
-    formData: FormData
-): Promise<NewProjectFormState> {
-    const validatedFields = newProjectSchema.safeParse({
-        name: formData.get('name'),
-        private: formData.get('private') === 'on' ? true : false,
-        image: formData.get('image'),
-        type: formData.get('type'),
-        tags: formData.get('tags'),
-        description: formData.get('description'),
-    });
-
-    const returnState: NewProjectFormState = {
-        name: validatedFields.data?.name,
-        private: validatedFields.data?.private,
-        image: validatedFields.data?.image,
-        type: validatedFields.data?.type,
-        description: validatedFields.data?.description,
-    };
-    if (validatedFields.data?.tags) {
-        returnState.tags =
-            validatedFields.data.tags.split(customArraySeparator);
-    }
-
-    const projectId = formData.get('projectId');
-    if (!projectId) {
-        returnState.status = 400;
-        returnState.message = 'projectId is mandatory';
-        return returnState;
-    }
-
-    if (!validatedFields.success) {
-        // TODO: return only error message
-        returnState.status = 400;
-        returnState.message = validatedFields.error.message;
-        return returnState;
-    }
-
-    if (validatedFields.data?.type === '') {
-        // TODO: return only error message
-        returnState.status = 400;
-        returnState.message = 'type is mandatory';
-        return returnState;
-    }
-
-    const body: {
-        name: string;
-        private: boolean;
-        image: string;
-        type: string;
-        tags?: string[];
-        description?: string;
-    } = {
-        name: validatedFields.data.name,
-        private: validatedFields.data.private,
-        image:
-            process.env.NEXT_PUBLIC_AVATAR_ENDPOINT + validatedFields.data.name,
-        type: validatedFields.data.type,
-    };
-    if (validatedFields.data.image) {
-        body.image = validatedFields.data.image;
-    }
-    if (validatedFields.data.tags)
-        body.tags = validatedFields.data.tags.split(customArraySeparator);
-    if (validatedFields.data.description)
-        body.description = validatedFields.data.description;
-    const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}`,
-        'patch',
-        body
-    );
-
-    if (response.status !== 200) {
-        return { status: response.status, message: response.data.message };
-    }
-
-    return { status: 200, message: 'Project created successfully' };
-}
-
-export async function deleteProject(projectId: string) {
-    const response = await axiosInstance(
-        `${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/projects/${projectId}`,
-        'delete'
-    );
-
-    if (response.status !== 200) {
-        return { status: response.status, message: response.data.message };
-    }
-
-    return { status: 200, message: 'Project deleted successfully' };
-}
+};
