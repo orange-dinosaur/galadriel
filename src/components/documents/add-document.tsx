@@ -93,6 +93,21 @@ export const AddDcoumentSidebarMenuSubItem = forwardRef<
             }
         }, [state]);
 
+        useEffect(() => {
+            const handlePointerDown = (event: MouseEvent) => {
+                if (
+                    formRef.current &&
+                    !formRef.current.contains(event.target as Node)
+                ) {
+                    onDocumentSuccessfullyAdded(); // clears projectToAddDocumentTo
+                }
+            };
+
+            document.addEventListener('mousedown', handlePointerDown);
+            return () =>
+                document.removeEventListener('mousedown', handlePointerDown);
+        }, [onDocumentSuccessfullyAdded]);
+
         return (
             <form ref={formRef} action={formAction} className="flex-1">
                 <input
