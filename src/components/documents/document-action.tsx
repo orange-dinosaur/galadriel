@@ -142,15 +142,14 @@ export function DocumentActionSidebarMenuSubItem({
             <SidebarMenuSubButton
                 asChild
                 className={`${
-                    pathname === doc.url ||
-                    pathname.startsWith(`${doc.url}`)
+                    pathname === doc.url || pathname.startsWith(`${doc.url}`)
                         ? 'bg-secondary'
                         : ''
                 }`}>
                 <span className="flex justify-between">
                     {!isEditing && (
                         <a href={doc.url}>
-                            <span>{doc.title}</span>
+                            <span>{fileName}</span>
                         </a>
                     )}
                     {isEditing && (
