@@ -89,9 +89,9 @@ const Editor = ({ projectId, documentId, content }: EditorProps) => {
                 />
             </div>
 
-            {editor && <EditorBubbleMenu editor={editor} />}
+            {/* {editor && <EditorBubbleMenu editor={editor} />}
 
-            {editor && <EditorFloatingMenu editor={editor} />}
+            {editor && <EditorFloatingMenu editor={editor} />} */}
 
             <ScrollArea className="w-full flex-1">
                 <div className="flex justify-center pt-2">
