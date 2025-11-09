@@ -9,7 +9,7 @@ import {
     SidebarContent,
     SidebarFooter,
 } from '@/components/ui/sidebar';
-import { NavActions } from './nav-actions';
+import { NavActions } from '@/components/sidebar/nav-actions';
 import { UserDataFullObject } from '@/lib/custom-types';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {

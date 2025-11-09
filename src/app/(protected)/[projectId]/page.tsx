@@ -1,8 +1,9 @@
 import { DocumentCard } from '@/components/documents/document-card';
-import { ProjectCard } from '@/components/projects/project-card';
+import { ProjectData } from '@/components/projects/project-data';
+import { ProjectPageActions } from '@/components/projects/project-page-actions';
+import { Badge } from '@/components/ui/badge';
 import { getProjectById } from '@/db/projects';
-import axiosInstance from '@/lib/axiosInstance';
-import { DbDocumentRow, Project, UserData } from '@/lib/custom-types';
+import { Project } from '@/lib/custom-types';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 
 export default async function ProjectId({
@@ -28,16 +29,30 @@ export default async function ProjectId({
 
     return (
         <div>
-            <div className="flex items-center pt-4 pb-8 gap-4">
+            <div className="flex items-center pt-4 pb-3 gap-4">
                 <p className="text-2xl">{project.project.name}</p>
                 {project.project.private ? (
                     <EyeOffIcon className="max-w-4 max-h-4 font-bold" />
                 ) : (
                     <EyeIcon className="max-w-4 max-h-4 font-bold" />
                 )}
+                <Badge className="font-bold bg-blue-500 text-white">
+                    {project.project.type}
+                </Badge>
+                <ProjectPageActions
+                    project={{
+                        ...project.project,
+                    }}
+                />
             </div>
 
-            <div className="flex gap-6">
+            <ProjectData
+                project={{
+                    ...project.project,
+                }}
+            />
+
+            <div className="flex flex-wrap gap-6 pt-8">
                 <DocumentCard
                     key={'key'}
                     document={{

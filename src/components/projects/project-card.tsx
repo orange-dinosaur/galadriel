@@ -1,7 +1,6 @@
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -31,9 +30,9 @@ export function ProjectCard({ project }: { project: DbProjectRow }) {
                             <EyeIcon className="max-w-3 max-h-3 font-bold" />
                         )}
                     </span>
-                    <CardDescription className="pt-3 pb-4">
+                    <Badge className="font-bold bg-blue-500 text-white mt-4 mb-5">
                         {project.type}
-                    </CardDescription>
+                    </Badge>
                 </CardContent>
                 <CardFooter className="flex flex-wrap gap-1 overflow-y-scroll overflow-x-hidden pb-2">
                     {project.tags?.map((t) => (
