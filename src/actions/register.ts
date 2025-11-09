@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { signupSchema } from '@/actions/schemas';
 import { createAdminClient } from '@/appwrite/config';
-import { ID } from 'node-appwrite';
+import { AppwriteException, ID } from 'node-appwrite';
 import { cookies } from 'next/headers';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { RegisterFormState } from '@/lib/custom-types';
@@ -28,17 +28,35 @@ export async function registerUser(
     };
 
     if (!validatedFields.success) {
-        // TODO: return only error message
-        returnState.status = 400;
-        returnState.message = validatedFields.error.message;
-        return returnState;
-    }
+        const failedFields = [];
 
-    if (
-        validatedFields.data.password !== validatedFields.data.confirmPassword
-    ) {
+        const formattedErrors = validatedFields.error.format();
+        if (formattedErrors.username?._errors) {
+            failedFields.push(
+                `username: ${formattedErrors.username._errors[0]}`
+            );
+        }
+        if (formattedErrors.email?._errors)
+            failedFields.push(`email: ${formattedErrors.email._errors[0]}`);
+        if (formattedErrors.password?._errors)
+            failedFields.push(
+                `password: ${formattedErrors.password._errors[0]}`
+            );
+        if (formattedErrors.confirmPassword?._errors)
+            failedFields.push(
+                `confirm password: ${formattedErrors.confirmPassword._errors[0]}`
+            );
+
+        // return directly the fields taken from the formData
+        returnState.username = formData.get('username') as string;
+        returnState.email = formData.get('email') as string;
+        returnState.password = formData.get('password') as string;
+        returnState.confirmPassword = formData.get(
+            'confirm-password'
+        ) as string;
+
         returnState.status = 400;
-        returnState.message = 'Passwords do not match';
+        returnState.message = failedFields.join(', ');
         return returnState;
     }
 
@@ -67,9 +85,15 @@ export async function registerUser(
         });
 
         redirect('/home');
-    } catch (error) {
+    } catch (error: AppwriteException | any) {
         if (isRedirectError(error)) {
             redirect('/home');
+        }
+
+        if (error instanceof AppwriteException) {
+            returnState.status = error.code;
+            returnState.message = error.message;
+            return returnState;
         }
 
         returnState.status = 500;

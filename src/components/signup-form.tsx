@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { registerUser } from '@/actions/register';
 import { RegisterFormState } from '@/lib/custom-types';
 import { signupWithGoogle } from '@/auth/oauth';

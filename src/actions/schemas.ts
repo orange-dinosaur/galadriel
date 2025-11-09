@@ -5,12 +5,17 @@ export const loginSchema = z.object({
     password: z.string(),
 });
 
-export const signupSchema = z.object({
-    username: z.string(),
-    email: z.email(),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
-});
+export const signupSchema = z
+    .object({
+        username: z.string(),
+        email: z.email(),
+        password: z.string().min(8),
+        confirmPassword: z.string().min(8),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ['confirmPassword'],
+    });
 
 export const newProjectSchema = z.object({
     name: z.string(),
