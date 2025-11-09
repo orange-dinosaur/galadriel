@@ -48,7 +48,6 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
 
     useEffect(() => {
         setCurrentProjectFromPathname(pathname.split('/')[1]);
-        console.log('currentProjectFromPathname', currentProjectFromPathname);
     }, [pathname]);
 
     const handleDeleteProject = async (projectUrl: string) => {
