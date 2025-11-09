@@ -16,8 +16,10 @@ export default async function DocumentId({
 
     if ((response.status && response.status !== 200) || !response.data) {
         return (
-            <div>
-                <div>DOCUMENT {documentId} NOT FOUND</div>
+            <div className="w-full h-full flex justify-center items-center">
+                <p className="text-muted-foreground italic mb-8 text-5xl">
+                    404 - Document not found
+                </p>
             </div>
         );
     }

@@ -13,8 +13,10 @@ export default async function ProjectId({
 
     if ((response.status && response.status !== 200) || !response.data) {
         return (
-            <div>
-                <div>PROEJCT {projectId} NOT FOUND</div>
+            <div className="w-full h-full flex justify-center items-center">
+                <p className="text-muted-foreground italic mb-8 text-5xl">
+                    404 - Project not found
+                </p>
             </div>
         );
     }
