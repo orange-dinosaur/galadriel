@@ -183,6 +183,11 @@ export const updateProjectById = async (
             return new DbResponse(403, 'Access DENIED');
         }
 
+        const calculatedPrivateValue =
+            'private' in newProjectData
+                ? newProjectData.private
+                : projects[0].private;
+
         await database.updateRow({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
             tableId: process.env.NEXT_PUBLIC_COLLECTION_PROJECTS || '',
@@ -191,9 +196,7 @@ export const updateProjectById = async (
                 name: newProjectData.name
                     ? newProjectData.name
                     : projects[0].name,
-                private: newProjectData.private
-                    ? newProjectData.private
-                    : projects[0].private,
+                private: calculatedPrivateValue,
                 image: newProjectData.image
                     ? newProjectData.image
                     : projects[0].image,
