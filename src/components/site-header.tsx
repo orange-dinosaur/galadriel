@@ -1,7 +1,7 @@
 'use client';
 
 import { SidebarIcon } from 'lucide-react';
-import { SearchForm } from '@/components/search-form';
+/* mport { SearchForm } from '@/components/search-form'; */
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -32,7 +32,7 @@ export function SiteHeader() {
                         />
                     </Link>
                 </div>
-                <SearchForm className="w-full sm:ml-auto sm:w-auto" />
+                {/* <SearchForm className="w-full sm:ml-auto sm:w-auto" /> */}
             </div>
         </header>
     );
