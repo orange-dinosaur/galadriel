@@ -53,7 +53,7 @@ const EditorToolbar = ({
     }, [editor]);
 
     return (
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-start gap-2 gap-y-2 px-3 py-2 sm:justify-center sm:gap-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-start gap-2 gap-y-2 px-3 py-2 sm:justify-center sm:gap-3 sm:px-6 md:flex-nowrap md:gap-3">
             <ToolbarSave
                 projectId={projectId}
                 documentId={documentId}
