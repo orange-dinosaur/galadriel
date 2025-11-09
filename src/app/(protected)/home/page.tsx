@@ -51,7 +51,7 @@ export default async function Home() {
     return (
         <>
             {data.projects.length === 0 && (
-                <div className="w-full h-full flex justify-center items-center">
+                <div className="w-full h-full flex flex-wrap justify-center items-center">
                     <div className="flex flex-col justify-center w-4/6 text-muted-foreground">
                         <blockquote className="border-l-4 border-muted-foreground pl-6 italic mb-8 text-5xl">
                             {quote}
