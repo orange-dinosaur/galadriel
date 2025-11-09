@@ -248,6 +248,19 @@ export class DbDocumentRow {
         if (!rows || !Array.isArray(rows)) return [];
         return rows.map((r) => new DbDocumentRow(r));
     }
+
+    toObject() {
+        return {
+            userId: this.userId,
+            projectId: this.projectId,
+            title: this.title,
+            fileId: this.fileId,
+            drafts: this.drafts,
+            $id: this.$id,
+            $createdAt: this.$createdAt,
+            $updatedAt: this.$updatedAt,
+        };
+    }
 }
 
 export class DbProjectRow {

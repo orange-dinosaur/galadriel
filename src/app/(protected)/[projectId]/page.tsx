@@ -1,6 +1,9 @@
+import { DocumentCard } from '@/components/documents/document-card';
+import { ProjectCard } from '@/components/projects/project-card';
 import { getProjectById } from '@/db/projects';
 import axiosInstance from '@/lib/axiosInstance';
-import { UserData } from '@/lib/custom-types';
+import { DbDocumentRow, Project, UserData } from '@/lib/custom-types';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 
 export default async function ProjectId({
     params,
@@ -21,18 +24,40 @@ export default async function ProjectId({
         );
     }
 
-    const resData: UserData = UserData.fromObject(response.data);
-    const documents = resData.data[0].documents;
+    const project: Project = response.data;
 
     return (
         <div>
-            <div>DOCUMENTS OF PROJECT {projectId}</div>
-            <br />
-            <div>
-                {documents.map((doc) => (
-                    <a href={`/${projectId}/${doc.$id}`} key={doc.$id}>
-                        <div key={doc.$id}>{doc.$id}</div>
-                    </a>
+            <div className="flex items-center pt-4 pb-8 gap-4">
+                <p className="text-2xl">{project.project.name}</p>
+                {project.project.private ? (
+                    <EyeOffIcon className="max-w-4 max-h-4 font-bold" />
+                ) : (
+                    <EyeIcon className="max-w-4 max-h-4 font-bold" />
+                )}
+            </div>
+
+            <div className="flex gap-6">
+                <DocumentCard
+                    key={'key'}
+                    document={{
+                        userId: '',
+                        projectId: project.project.$id,
+                        title: '',
+                        fileId: '',
+                        drafts: [],
+                        $id: '',
+                        $createdAt: new Date(),
+                        $updatedAt: new Date(),
+                    }}
+                    type="add"
+                />
+                {project.documents.map((d) => (
+                    <DocumentCard
+                        key={d.$id}
+                        document={d.toObject()}
+                        type="display"
+                    />
                 ))}
             </div>
         </div>
