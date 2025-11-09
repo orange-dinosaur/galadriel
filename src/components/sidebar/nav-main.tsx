@@ -190,45 +190,35 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                     </span>
                                 </span>
                             </SidebarMenuButton>
-                            {item.items?.length ? (
-                                <>
-                                    <CollapsibleTrigger asChild>
-                                        <SidebarMenuAction className="data-[state=open]:rotate-90">
-                                            <ChevronRight className="cursor-pointer" />
-                                            <span className="sr-only">
-                                                Toggle
-                                            </span>
-                                        </SidebarMenuAction>
-                                    </CollapsibleTrigger>
-                                    <CollapsibleContent>
-                                        <SidebarMenuSub>
-                                            {item.items?.map((subItem) => (
-                                                <DocumentActionSidebarMenuSubItem
-                                                    key={subItem.title}
-                                                    pathname={pathname}
-                                                    projectId={
-                                                        item.url.split('/')[1]
-                                                    }
-                                                    document={subItem}
-                                                />
-                                            ))}
+                            <CollapsibleTrigger asChild>
+                                <SidebarMenuAction className="data-[state=open]:rotate-90">
+                                    <ChevronRight className="cursor-pointer" />
+                                    <span className="sr-only">Toggle</span>
+                                </SidebarMenuAction>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenuSub>
+                                    {item.items?.map((subItem) => (
+                                        <DocumentActionSidebarMenuSubItem
+                                            key={subItem.title}
+                                            pathname={pathname}
+                                            projectId={item.url.split('/')[1]}
+                                            document={subItem}
+                                        />
+                                    ))}
 
-                                            {projectToAddDocumentTo ===
-                                                item.url.split('/')[1] && (
-                                                <AddDcoumentSidebarMenuSubItem
-                                                    /* ref={boxRef} */
-                                                    projectId={
-                                                        item.url.split('/')[1]
-                                                    }
-                                                    onDocumentSuccessfullyAdded={
-                                                        handleDocumentSuccessfullyAdded
-                                                    }
-                                                />
-                                            )}
-                                        </SidebarMenuSub>
-                                    </CollapsibleContent>
-                                </>
-                            ) : null}
+                                    {projectToAddDocumentTo ===
+                                        item.url.split('/')[1] && (
+                                        <AddDcoumentSidebarMenuSubItem
+                                            /* ref={boxRef} */
+                                            projectId={item.url.split('/')[1]}
+                                            onDocumentSuccessfullyAdded={
+                                                handleDocumentSuccessfullyAdded
+                                            }
+                                        />
+                                    )}
+                                </SidebarMenuSub>
+                            </CollapsibleContent>
                         </SidebarMenuItem>
                     </Collapsible>
                 ))}

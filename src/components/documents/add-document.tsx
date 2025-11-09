@@ -79,10 +79,10 @@ export function AddDcoumentSidebarMenuSubItem({
                             event.currentTarget.form?.requestSubmit();
                         }
                     }}
-                    className="border-0 border-b border-transparent bg-transparent px-0 py-0 text-sm font-medium focus-visible:border-primary focus-visible:ring-0 rounded-none"
+                    className="border-0 border-b border-transparent bg-transparent py-0 text-sm font-medium focus-visible:border-primary focus-visible:ring-0 rounded-none"
                     required
                 />
-                <button type="submit" disabled={pending}>
+                <button type="submit" disabled={pending} className="mr-2 pl-2">
                     {pending ? (
                         <Spinner />
                     ) : (
