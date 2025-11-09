@@ -56,7 +56,7 @@ export default async function ProjectId({
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 pt-2">
+            <div className="flex flex-wrap gap-6 pt-2 justify-center md:justify-start">
                 <DocumentCard
                     key={'key'}
                     document={{
