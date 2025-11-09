@@ -62,7 +62,7 @@ export default async function Home() {
                 </div>
             )}
             {data.projects.length !== 0 && (
-                <div className="flex gap-6">
+                <div className="flex gap-6 pt-4">
                     {projectList.map((p) => (
                         <ProjectCard key={p.$id} project={p} />
                     ))}
