@@ -1,4 +1,5 @@
 import { user } from '@/auth/user';
+import { ProjectCard } from '@/components/projects/project-card';
 import { getAllProjectsOfUser } from '@/db/projects';
 import axiosInstance from '@/lib/axiosInstance';
 import { Project, UserDataFull } from '@/lib/custom-types';
@@ -61,16 +62,10 @@ export default async function Home() {
                 </div>
             )}
             {data.projects.length !== 0 && (
-                <div>
-                    <div>PROJECTS</div>
-                    <br />
-                    <div>
-                        {projectList.map((p) => (
-                            <a href={p.$id} key={p.$id}>
-                                <div key={p.$id}>{p.name}</div>
-                            </a>
-                        ))}
-                    </div>
+                <div className="flex gap-6">
+                    {projectList.map((p) => (
+                        <ProjectCard key={p.$id} project={p} />
+                    ))}
                 </div>
             )}
         </>
