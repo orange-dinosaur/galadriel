@@ -53,7 +53,7 @@ const EditorToolbar = ({
     }, [editor]);
 
     return (
-        <div className="mx-auto flex w-full justify-center items-center gap-3 px-6 py-2">
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-start gap-2 gap-y-2 px-3 py-2 sm:justify-center sm:gap-3 sm:px-6">
             <ToolbarSave
                 projectId={projectId}
                 documentId={documentId}
@@ -62,23 +62,23 @@ const EditorToolbar = ({
 
             <ToolbarUndoRedo editor={editor} />
 
-            <div className="border border-muted-foreground h-6 mx-2"></div>
+            <div className="mx-2 hidden h-6 border border-muted-foreground sm:block"></div>
 
             <FontFamilySelection editor={editor} />
 
-            <div className="border border-muted-foreground h-6 mx-2"></div>
+            <div className="mx-2 hidden h-6 border border-muted-foreground sm:block"></div>
 
             <ToolbarColors editor={editor} />
 
-            <div className="border border-muted-foreground h-6 mx-2"></div>
+            <div className="mx-2 hidden h-6 border border-muted-foreground sm:block"></div>
 
             <ToolbarHeadings editor={editor} />
 
-            <div className="border border-muted-foreground h-6 mx-2"></div>
+            <div className="mx-2 hidden h-6 border border-muted-foreground sm:block"></div>
 
             <ToolbarTextStyle editor={editor} />
 
-            <div className="border border-muted-foreground h-6 mx-2"></div>
+            <div className="mx-2 hidden h-6 border border-muted-foreground sm:block"></div>
 
             <ToolbarLists editor={editor} />
         </div>

@@ -59,7 +59,7 @@ const Editor = ({ projectId, documentId, content }: EditorProps) => {
 
         editorProps: {
             attributes: {
-                class: 'w-[816px] min-h-[1054px] p-[56px] bg-white border border-primary text-black',
+                class: 'tiptap w-full min-h-[1054px] sm:p-[56px] p-4 bg-white border border-primary text-black break-words whitespace-pre-wrap',
             },
         },
 
@@ -79,7 +79,7 @@ const Editor = ({ projectId, documentId, content }: EditorProps) => {
 
     return (
         <div className="flex min-h-screen w-full flex-col">
-            <div className="sticky top-(--header-height,0px) z-40 w-full bg-background">
+            <div className="sticky top-(--header-height,0px) z-40 w-full border-b border-border bg-background">
                 <EditorToolbar
                     projectId={projectId}
                     documentId={documentId}
@@ -91,9 +91,11 @@ const Editor = ({ projectId, documentId, content }: EditorProps) => {
 
             {editor && <EditorFloatingMenu editor={editor} />} */}
 
-            <ScrollArea className="w-full flex-1">
-                <div className="flex justify-center pt-2">
-                    <EditorContent editor={editor} />
+            <ScrollArea className="w-full flex-1 overflow-x-hidden">
+                <div className="flex w-full justify-center px-3 pb-8 pt-2 sm:px-6">
+                    <div className="w-full max-w-full sm:max-w-[816px]">
+                        <EditorContent editor={editor} className="w-full" />
+                    </div>
                 </div>
             </ScrollArea>
         </div>
