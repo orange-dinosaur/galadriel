@@ -28,31 +28,35 @@ export default async function ProjectId({
     const project: Project = response.data;
 
     return (
-        <div>
-            <div className="flex items-center pt-4 pb-3 gap-4">
-                <p className="text-2xl">{project.project.name}</p>
-                {project.project.private ? (
-                    <EyeOffIcon className="max-w-4 max-h-4 font-bold" />
-                ) : (
-                    <EyeIcon className="max-w-4 max-h-4 font-bold" />
-                )}
-                <Badge className="font-bold bg-blue-500 text-white">
-                    {project.project.type}
-                </Badge>
-                <ProjectPageActions
-                    project={{
-                        ...project.project,
-                    }}
-                />
+        <div className="space-y-6 bg-background min-h-screen">
+            <div className="sticky top-[calc(var(--header-height))] z-30 bg-background pt-4 pb-3 shadow-sm mt-0">
+                <div className="flex items-center gap-4">
+                    <p className="text-2xl">{project.project.name}</p>
+                    {project.project.private ? (
+                        <EyeOffIcon className="max-w-4 max-h-4 font-bold" />
+                    ) : (
+                        <EyeIcon className="max-w-4 max-h-4 font-bold" />
+                    )}
+                    <Badge className="font-bold bg-blue-500 text-white">
+                        {project.project.type}
+                    </Badge>
+                    <ProjectPageActions
+                        project={{
+                            ...project.project,
+                        }}
+                    />
+                </div>
+
+                <div className="mt-3">
+                    <ProjectData
+                        project={{
+                            ...project.project,
+                        }}
+                    />
+                </div>
             </div>
 
-            <ProjectData
-                project={{
-                    ...project.project,
-                }}
-            />
-
-            <div className="flex flex-wrap gap-6 pt-8">
+            <div className="flex flex-wrap gap-6 pt-2">
                 <DocumentCard
                     key={'key'}
                     document={{
