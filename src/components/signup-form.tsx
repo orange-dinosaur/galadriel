@@ -120,7 +120,7 @@ export function SignupForm({
                             Create Account
                         </Button>
                     </Field>
-                    <FieldSeparator>Or</FieldSeparator>
+                    <FieldSeparator>Coming soon</FieldSeparator>
                     <Field className="grid gap-4 sm:grid-cols-2">
                         {/* TODO: Add apple login */}
                         <Button
@@ -142,7 +142,7 @@ export function SignupForm({
                             variant="outline"
                             type="button"
                             className="cursor-pointer"
-                            disabled={pending}
+                            disabled
                             onClick={signupWithGoogle}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
