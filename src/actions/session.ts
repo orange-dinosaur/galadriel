@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import { AuthenticatedUser, user } from '@/auth/user';
 import { loginSchema } from '@/actions/schemas';
 import { LoginFormState } from '@/lib/custom-types';
+import { AppwriteException } from 'node-appwrite';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 export async function createSession(
     initialState: any,
@@ -42,9 +44,19 @@ export async function createSession(
             expires: new Date(session.expire),
             path: '/',
         });
-    } catch {
+    } catch (error: AppwriteException | any) {
+        if (isRedirectError(error)) {
+            redirect('/home');
+        }
+
+        if (error instanceof AppwriteException) {
+            returnState.status = error.code;
+            returnState.message = error.message;
+            return returnState;
+        }
+
         returnState.status = 401;
-        returnState.message = 'Invalid email or password';
+        returnState.message = 'Error during sign in';
         return returnState;
     }
 
