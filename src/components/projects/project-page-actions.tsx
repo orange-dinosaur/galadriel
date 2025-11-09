@@ -19,7 +19,6 @@ import {
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { redirect, useRouter } from 'next/navigation';
 import { deleteProject } from '@/actions/projects';
 import { useRef, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
@@ -40,15 +39,12 @@ export function ProjectPageActions({
         $updatedAt: Date;
     };
 }) {
-    const router = useRouter();
-
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const projectActionTriggerRef = useRef<HTMLButtonElement>(null);
     const handleDeleteProject = async (projectId: string) => {
         const response = await deleteProject(projectId);
 
         if (response.status === 200) {
-            router.refresh();
             toast.success('Project deleted successfully');
             window.location.replace('/home');
         } else {

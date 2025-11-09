@@ -1,6 +1,5 @@
 'use server';
 
-import axiosInstance from '@/lib/axiosInstance';
 import { newFileSchema } from '@/actions/schemas';
 import { NewFileFormState } from '@/lib/custom-types';
 import {

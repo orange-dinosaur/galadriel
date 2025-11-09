@@ -56,7 +56,12 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
         const response = await deleteProject(projectId);
 
         if (response.status === 200) {
-            window.location.reload();
+            const docPath = `/${projectId}`;
+            if (pathname === docPath) {
+                window.location.replace('/home');
+            } else {
+                window.location.reload();
+            }
             toast.success('Project deleted successfully');
         } else {
             toast.error('Something went wrong');

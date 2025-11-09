@@ -103,12 +103,11 @@ export function DocumentActionSidebarMenuSubItem({
         const response = await deleteFile(projectId, documentId);
 
         if (response.status === 200) {
-            window.location.reload();
             toast.success('Document deleted successfully');
 
             const docPath = `/${projectId}/${documentId}`;
             if (pathname === docPath) {
-                redirect('/home', RedirectType.push);
+                window.location.replace('/home');
             }
         } else {
             toast.error('Something went wrong');
