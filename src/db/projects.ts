@@ -150,12 +150,9 @@ export const getProjectById = async (
         });
         const documents = DbDocumentRow.fromObject(docRows.rows);
 
-        const userData: UserData = UserData.fromDbSearchResult(
-            projects,
-            documents
-        );
+        const project = new Project(projects[0], documents);
 
-        return new DbResponse(200, 'OK', userData);
+        return new DbResponse(200, 'OK', project);
     } catch {
         return new DbResponse(500, 'Internal server error');
     }
