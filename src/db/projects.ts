@@ -63,7 +63,7 @@ export const createNewProject = async (
             data: projectToCreate,
         });
 
-        defaultProjectDocs.map(async (docName) => {
+        await defaultProjectDocs.map(async (docName) => {
             // create file
             const fileId = ID.unique();
             const createdFile = await storage.createFile({
