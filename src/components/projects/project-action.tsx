@@ -231,17 +231,15 @@ export function ProjectAction({
                             />
                         </div>
 
-                        <div className="flex flex-col items-start gap-3 w-full">
-                            <Label htmlFor="image">image</Label>
-                            <Input
-                                id="image"
-                                name="image"
-                                value={image}
-                                onChange={(e) => setImage(e.target.value)}
-                                disabled={pending}
-                                placeholder="https://project-cover.png"
-                            />
-                        </div>
+                        <Input
+                            hidden
+                            id="image"
+                            name="image"
+                            value={image}
+                            onChange={(e) => setImage(e.target.value)}
+                            disabled={pending}
+                            placeholder="https://project-cover.png"
+                        />
 
                         <div className="flex flex-col items-start gap-3 w-full">
                             <Label htmlFor="type">type*</Label>
