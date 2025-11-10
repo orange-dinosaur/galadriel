@@ -63,7 +63,7 @@ export function ProjectPageActions({
                     <DropdownMenuGroup>
                         <DropdownMenuItem
                             key="rename-project"
-                            className="cursor-pointer border-0 hover:rounded-sm p-1 hover:bg-secondary hover:border-0"
+                            className="cursor-pointer outline-none focus:outline-none hover:outline-none border-0 hover:rounded-sm p-1 hover:bg-secondary hover:border-0"
                             onSelect={() =>
                                 projectActionTriggerRef.current?.click()
                             }>
@@ -72,7 +72,7 @@ export function ProjectPageActions({
 
                         <DropdownMenuItem
                             key="delete-project"
-                            className="cursor-pointer border-0 hover:rounded-sm p-1 hover:bg-destructive hover:border-0"
+                            className="cursor-pointer outline-none focus:outline-none hover:outline-none border-0 hover:rounded-sm p-1 hover:bg-destructive hover:border-0"
                             onSelect={() => setIsDeleteDialogOpen(true)}>
                             Delete
                         </DropdownMenuItem>
