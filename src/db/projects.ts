@@ -75,6 +75,47 @@ const getProjectDocsByType = (projectType: string): string[] => {
     }
 };
 
+/**
+ * Sorts documents to display default project documents in their template order first,
+ * followed by user-added documents sorted by creation date (oldest first)
+ */
+const sortDocumentsByTemplateOrder = (
+    documents: DbDocumentRow[],
+    projectType: string
+): DbDocumentRow[] => {
+    const templateDocs = getProjectDocsByType(projectType);
+    const templateMap = new Map<string, number>();
+    templateDocs.forEach((docName, index) => {
+        templateMap.set(docName, index);
+    });
+
+    // Separate template documents from user-added documents
+    const templateDocuments: DbDocumentRow[] = [];
+    const userAddedDocuments: DbDocumentRow[] = [];
+
+    documents.forEach((doc) => {
+        if (templateMap.has(doc.title)) {
+            templateDocuments.push(doc);
+        } else {
+            userAddedDocuments.push(doc);
+        }
+    });
+
+    // Sort template documents by their order in the template
+    templateDocuments.sort((a, b) => {
+        const indexA = templateMap.get(a.title) ?? Number.MAX_SAFE_INTEGER;
+        const indexB = templateMap.get(b.title) ?? Number.MAX_SAFE_INTEGER;
+        return indexA - indexB;
+    });
+
+    // Sort user-added documents by creation date (oldest first)
+    userAddedDocuments.sort(
+        (a, b) => a.$createdAt.getTime() - b.$createdAt.getTime()
+    );
+
+    return [...templateDocuments, ...userAddedDocuments];
+};
+
 export const createNewProject = async (
     props: NewProjectProps
 ): Promise<DbResponse> => {
@@ -183,7 +224,6 @@ export const getProjectById = async (
 
         queries.length = 0;
         queries.push(Query.equal('projectId', projectId));
-        queries.push(Query.orderDesc('$updatedAt'));
 
         // get all user documents
         const docRows = await database.listRows({
@@ -193,7 +233,13 @@ export const getProjectById = async (
         });
         const documents = DbDocumentRow.fromObject(docRows.rows);
 
-        const project = new Project(projects[0], documents);
+        // Sort documents by template order
+        const sortedDocuments = sortDocumentsByTemplateOrder(
+            documents,
+            projects[0].type
+        );
+
+        const project = new Project(projects[0], sortedDocuments);
 
         return new DbResponse(200, 'OK', project);
     } catch {
@@ -359,7 +405,6 @@ export const getAllProjectsOfUser = async (
             )
         );
         queries.push(Query.equal('userId', userId));
-        queries.push(Query.orderDesc('$updatedAt'));
 
         // get all user documents
         const docRows = await database.listRows({
@@ -374,7 +419,14 @@ export const getAllProjectsOfUser = async (
             const projectDocuments = documents.filter(
                 (doc) => doc.projectId === project.$id
             );
-            projectsObject.push(new Project(project, projectDocuments));
+
+            // Sort documents by template order
+            const sortedDocuments = sortDocumentsByTemplateOrder(
+                projectDocuments,
+                project.type
+            );
+
+            projectsObject.push(new Project(project, sortedDocuments));
         });
 
         return new DbResponse(200, 'OK', projectsObject);
