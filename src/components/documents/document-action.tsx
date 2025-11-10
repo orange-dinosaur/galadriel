@@ -200,7 +200,7 @@ export function DocumentActionSidebarMenuSubItem({
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem
-                                        className="cursor-pointer hover:bg-destructive"
+                                        className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground"
                                         onSelect={() =>
                                             handleDeleteDocument(
                                                 projectId,
