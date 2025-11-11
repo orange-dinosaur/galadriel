@@ -160,9 +160,6 @@ export function ProjectAction({
 
     useEffect(() => {
         if (state && state.status === 200 && isOpen) {
-            if (action === 'create') {
-                setTags('');
-            }
             router.refresh();
             setIsOpen(false);
             toast.success(
@@ -175,7 +172,15 @@ export function ProjectAction({
 
     function handleDialogChange(nextOpen: boolean) {
         setIsOpen(nextOpen);
-        if (!nextOpen) {
+        if (nextOpen && action === 'create') {
+            // Reset form when opening create dialog
+            setprojectTypeValue('');
+            setTags('');
+            setName('');
+            setImage('');
+            setDescription('');
+            setIsPrivate(false);
+        } else if (!nextOpen) {
             if (action === 'create') {
                 setprojectTypeValue('');
                 setTags('');
