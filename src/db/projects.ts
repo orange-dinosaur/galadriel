@@ -8,6 +8,7 @@ import {
     Project,
     UserData,
 } from '@/lib/custom-types';
+import { getDocumentTemplate } from '@/db/document-templates';
 
 export type NewProjectProps = {
     userId?: string;
@@ -147,6 +148,12 @@ export const createNewProject = async (
 
         await Promise.all(
             projectDocs.map(async (docName) => {
+                // Get template content for this document
+                const templateContent = getDocumentTemplate(
+                    docName,
+                    props.type
+                );
+
                 // create file
                 const fileId = ID.unique();
                 const createdFile = await storage.createFile({
@@ -154,17 +161,9 @@ export const createNewProject = async (
                     fileId: fileId,
                     file: new File(
                         [
-                            new Blob(
-                                [
-                                    JSON.stringify({
-                                        type: 'doc',
-                                        content: [{ type: 'paragraph' }],
-                                    }),
-                                ],
-                                {
-                                    type: 'application/json',
-                                }
-                            ),
+                            new Blob([JSON.stringify(templateContent)], {
+                                type: 'application/json',
+                            }),
                         ],
                         docName + '.json',
                         {

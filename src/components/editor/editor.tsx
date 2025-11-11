@@ -10,6 +10,7 @@ import {
     TextStyleKit,
     Color,
 } from '@tiptap/extension-text-style';
+import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
@@ -40,6 +41,9 @@ const Editor = ({ projectId, documentId, content }: EditorProps) => {
             Color,
             Highlight.configure({
                 multicolor: true,
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
             }),
             TaskList,
             TaskItem.configure({
