@@ -24,12 +24,13 @@ import { useEffect } from 'react';
 type EditorProps = {
     projectId: string;
     documentId: string;
+    draftId?: string;
     content: Content;
 };
 
 /* TODO: Define better sheet measures and render for mobile */
 /* TODO: Fix image resize */
-const Editor = ({ projectId, documentId, content }: EditorProps) => {
+const Editor = ({ projectId, documentId, draftId, content }: EditorProps) => {
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -87,6 +88,7 @@ const Editor = ({ projectId, documentId, content }: EditorProps) => {
                 <EditorToolbar
                     projectId={projectId}
                     documentId={documentId}
+                    draftId={draftId ? draftId : undefined}
                     editor={editor}
                 />
             </div>

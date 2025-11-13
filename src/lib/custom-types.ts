@@ -444,6 +444,42 @@ export class FullDocument {
     }
 }
 
+export class FullDraft {
+    draft: DbDraftRow;
+    fileMetadata: FileMetadata;
+    fileContentJson: string;
+
+    constructor(
+        draft: DbDraftRow,
+        fileMetadata: FileMetadata,
+        fileContentJson: string
+    ) {
+        this.draft = draft;
+        this.fileMetadata = fileMetadata;
+        this.fileContentJson = fileContentJson;
+    }
+
+    static fromObject(data: {
+        draft: any;
+        fileMetadata: string;
+        fileContentJson: string;
+    }) {
+        return new FullDraft(
+            new DbDraftRow(data.draft),
+            FileMetadata.fromObject(data.fileMetadata),
+            data.fileContentJson
+        );
+    }
+
+    toObject() {
+        return {
+            draft: this.draft,
+            fileMetadata: this.fileMetadata,
+            fileContentJson: this.fileContentJson,
+        };
+    }
+}
+
 export class Project {
     project: DbProjectRow;
     documents: DbDocumentRow[];

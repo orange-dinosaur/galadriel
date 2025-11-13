@@ -1,3 +1,5 @@
+'use server';
+
 import { user } from '@/auth/user';
 import { cookies } from 'next/headers';
 import { DbResponse } from '@/db/response';
@@ -7,12 +9,14 @@ import {
     DbProjectRow,
     FileMetadata,
     FullDocument,
+    DbDraftRow,
+    FullDraft,
 } from '@/lib/custom-types';
 import { ulid } from 'ulid';
 
-export const createNewDocument = async (
+export const createNewDraft = async (
     projectId: string,
-    title: string
+    documentId: string
 ): Promise<DbResponse> => {
     try {
         user.sessionCookie = (await cookies()).get('session');
@@ -38,55 +42,93 @@ export const createNewDocument = async (
             return new DbResponse(403, 'Access DENIED');
         }
 
+        // check that the document exists and that the user owns it
+        queries.length = 0;
+        queries.push(Query.equal('$id', documentId));
+        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.limit(1));
+
+        const docRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            queries: queries,
+        });
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+        if (documents.length === 0) {
+            return new DbResponse(404, 'Document not found');
+        }
+        if (authenticatedUser?.$id !== documents[0].userId) {
+            return new DbResponse(403, 'Access DENIED');
+        }
+
+        // get the file metadata and file content
+        const fileMetadata = await storage.getFile({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: documents[0].fileId || '',
+        });
+        const fileContent = await storage.getFileView({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: documents[0].fileId || '',
+        });
+
+        const fileContentJson = JSON.parse(
+            new TextDecoder().decode(fileContent)
+        );
+
         // create file
         const fileId = ID.unique();
-        const fileTitle = fileId + '_' + ulid();
+        const draftTitle = 'draft_' + fileId + '_' + ulid();
         const createdFile = await storage.createFile({
             bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
             fileId: fileId,
             file: new File(
                 [
-                    new Blob(
-                        [
-                            JSON.stringify({
-                                type: 'doc',
-                                content: [{ type: 'paragraph' }],
-                            }),
-                        ],
-                        {
-                            type: 'application/json',
-                        }
-                    ),
+                    new Blob([fileContentJson], {
+                        type: 'application/json',
+                    }),
                 ],
-                title + '.json',
+                draftTitle + '.json',
                 {
                     type: 'application/json',
                 }
             ),
         });
 
-        // create document in the db
-        await database.createRow({
+        // create draft in the db
+        const createdDraft = await database.createRow({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
             rowId: ID.unique(),
             data: {
                 userId: authenticatedUser.$id,
-                projectId: projectId,
-                title: title,
-                fileId: createdFile.$id,
+                documentId: documentId,
+                fileIdMain: documents[0].fileId || '',
+                fileIdDraft: createdFile.$id,
             },
         });
 
-        return new DbResponse(200, 'Document created successfully');
+        // update drafts inside the document
+        const drafts = documents[0].drafts ?? [];
+        drafts.push(createdDraft.$id);
+        await database.updateRow({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            rowId: documentId,
+            data: {
+                drafts: drafts,
+            },
+        });
+
+        return new DbResponse(200, 'Draft created successfully');
     } catch {
         return new DbResponse(500, 'Internal server error');
     }
 };
 
-export const getDocumentById = async (
+export const getDraftById = async (
     projectId: string,
-    documentId: string
+    documentId: string,
+    draftId: string
 ): Promise<DbResponse> => {
     try {
         user.sessionCookie = (await cookies()).get('session');
@@ -95,24 +137,24 @@ export const getDocumentById = async (
             await user.getUserAndDbAndStorage();
 
         const queries: string[] = [];
-        queries.push(Query.equal('$id', documentId));
-        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.equal('$id', draftId));
+        queries.push(Query.equal('documentId', documentId));
         queries.push(Query.limit(1));
 
-        // get the document
-        const docRows = await database.listRows({
+        // get the draft
+        const draftRows = await database.listRows({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromObject(docRows.rows);
+        const drafts = DbDraftRow.fromObject(draftRows.rows);
 
-        if (documents.length === 0) {
-            return new DbResponse(404, 'Document not found');
+        if (drafts.length === 0) {
+            return new DbResponse(404, 'Draft not found');
         }
 
         // if the user is not the document owner check if the project is public
-        if (authenticatedUser?.$id !== documents[0].userId) {
+        if (authenticatedUser?.$id !== drafts[0].userId) {
             queries.length = 0;
             queries.push(Query.equal('$id', projectId));
             queries.push(Query.limit(1));
@@ -134,34 +176,34 @@ export const getDocumentById = async (
         // get the file metadata and file content
         const fileMetadata = await storage.getFile({
             bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-            fileId: documents[0].fileId || '',
+            fileId: drafts[0].fileIdDraft || '',
         });
         const fileContent = await storage.getFileView({
             bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-            fileId: documents[0].fileId || '',
+            fileId: drafts[0].fileIdDraft || '',
         });
 
         const fileContentJson = JSON.parse(
             new TextDecoder().decode(fileContent)
         );
 
-        const fullDocument = new FullDocument(
-            documents[0],
+        const fullDraft = new FullDraft(
+            drafts[0],
             FileMetadata.fromObject(fileMetadata),
             fileContentJson
         );
 
-        return new DbResponse(200, 'OK', fullDocument);
+        return new DbResponse(200, 'OK', fullDraft);
     } catch {
         return new DbResponse(500, 'Internal server error');
     }
 };
 
-export const updateDocumentById = async (
+export const updateDraftById = async (
     projectId: string,
     documentId: string,
-    fileName?: string,
-    editorContent?: string
+    draftId: string,
+    editorContent: string
 ): Promise<DbResponse> => {
     try {
         user.sessionCookie = (await cookies()).get('session');
@@ -170,89 +212,66 @@ export const updateDocumentById = async (
             await user.getUserAndDbAndStorage();
 
         const queries: string[] = [];
-        queries.push(Query.equal('$id', documentId));
-        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.equal('$id', draftId));
+        queries.push(Query.equal('documentId', documentId));
         queries.push(Query.limit(1));
 
-        // get the document
-        const docRows = await database.listRows({
+        // get the draft
+        const draftRows = await database.listRows({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromObject(docRows.rows);
-        if (documents.length === 0) {
+        const drafts = DbDraftRow.fromObject(draftRows.rows);
+        if (drafts.length === 0) {
             return new DbResponse(404, 'Document not found');
         }
 
-        if (authenticatedUser?.$id !== documents[0].userId) {
+        if (authenticatedUser?.$id !== drafts[0].userId) {
             return new DbResponse(403, 'Access DENIED');
         }
 
         if (editorContent) {
+            // get the name of the draft to delete
+            const fileMetadata = await storage.getFile({
+                bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+                fileId: drafts[0].fileIdDraft || '',
+            });
+            const draftTitle = fileMetadata.name.split('.')[0];
+
             // delete the previous version of the file and create a new one with the same fileId
             await storage.deleteFile({
                 bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-                fileId: documents[0].fileId || '',
+                fileId: drafts[0].fileIdDraft || '',
             });
-
-            let documentTitle = documents[0].title;
-            if (fileName) {
-                documentTitle = fileName;
-
-                // update the document title in the db
-                await database.updateRow({
-                    databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-                    tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
-                    rowId: documentId,
-                    data: {
-                        title: documentTitle,
-                    },
-                });
-            }
 
             await storage.createFile({
                 bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-                fileId: documents[0].fileId || '',
+                fileId: drafts[0].fileIdDraft || '',
                 file: new File(
                     [
                         new Blob([JSON.stringify(editorContent)], {
                             type: 'application/json',
                         }),
                     ],
-                    documentTitle + '.json',
+                    draftTitle + '.json',
                     {
                         type: 'application/json',
                     }
                 ),
             });
-        } else if (fileName) {
-            await storage.updateFile({
-                bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-                fileId: documents[0].fileId || '',
-                name: fileName,
-            });
-
-            // update the document title in the db
-            await database.updateRow({
-                databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-                tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
-                rowId: documentId,
-                data: {
-                    title: fileName,
-                },
-            });
         }
 
-        return new DbResponse(200, 'Document updated successfully');
+        return new DbResponse(200, 'Draft updated successfully');
     } catch {
         return new DbResponse(500, 'Internal server error');
     }
 };
 
-export const DeleteDocumentById = async (
+export const DeleteDraftById = async (
     projectId: string,
-    documentId: string
+    documentId: string,
+    draftId: string
 ): Promise<DbResponse> => {
     try {
         user.sessionCookie = (await cookies()).get('session');
@@ -261,40 +280,40 @@ export const DeleteDocumentById = async (
             await user.getUserAndDbAndStorage();
 
         const queries: string[] = [];
-        queries.push(Query.equal('$id', documentId));
-        queries.push(Query.equal('projectId', projectId));
+        queries.push(Query.equal('$id', draftId));
+        queries.push(Query.equal('documentId', documentId));
         queries.push(Query.limit(1));
 
         // get the document
-        const docRows = await database.listRows({
+        const draftRows = await database.listRows({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
             queries: queries,
         });
-        const documents = DbDocumentRow.fromObject(docRows.rows);
+        const drafts = DbDraftRow.fromObject(draftRows.rows);
 
-        if (documents.length === 0) {
-            return new DbResponse(404, 'Document not found');
+        if (drafts.length === 0) {
+            return new DbResponse(404, 'Draft not found');
         }
 
-        if (authenticatedUser?.$id !== documents[0].userId) {
+        if (authenticatedUser?.$id !== drafts[0].userId) {
             return new DbResponse(403, 'Access DENIED');
         }
 
         // delete the file
         await storage.deleteFile({
             bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
-            fileId: documents[0].fileId || '',
+            fileId: drafts[0].fileIdDraft || '',
         });
 
         // delete the document
         await database.deleteRow({
             databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
-            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
-            rowId: documentId,
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
+            rowId: draftId,
         });
 
-        return new DbResponse(200, 'Document deleted successfully');
+        return new DbResponse(200, 'Draft deleted successfully');
     } catch {
         return new DbResponse(500, 'Internal server error');
     }

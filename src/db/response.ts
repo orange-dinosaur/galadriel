@@ -8,4 +8,12 @@ export class DbResponse {
         this.message = message;
         this.data = data;
     }
+
+    toPlainObject() {
+        return {
+            status: this.status,
+            message: this.message,
+            data: this.data,
+        };
+    }
 }

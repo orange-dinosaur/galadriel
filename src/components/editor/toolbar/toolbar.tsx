@@ -11,12 +11,14 @@ import ToolbarSave from '@/components/editor/toolbar/save';
 type EditorToolbarProps = {
     projectId: string;
     documentId: string;
+    draftId?: string;
     editor: Editor | null;
 };
 
 const EditorToolbar = ({
     projectId,
     documentId,
+    draftId,
     editor,
 }: EditorToolbarProps) => {
     const [, setRenderTick] = useState(0); // used only to trigger re-render
@@ -57,6 +59,7 @@ const EditorToolbar = ({
             <ToolbarSave
                 projectId={projectId}
                 documentId={documentId}
+                draftId={draftId ? draftId : undefined}
                 editor={editor}
             />
 

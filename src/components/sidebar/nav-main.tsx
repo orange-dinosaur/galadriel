@@ -36,7 +36,7 @@ import { usePathname } from 'next/navigation';
 import { deleteProject } from '@/actions/projects';
 import { toast } from 'sonner';
 import { UserDataFull, UserDataFullObject } from '@/lib/custom-types';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
 import { DocumentActionSidebarMenuSubItem } from '@/components/documents/document-action';
 import { AddDcoumentSidebarMenuSubItem } from '@/components/documents/add-document';
@@ -203,6 +203,7 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                             </CollapsibleTrigger>
                             <CollapsibleContent>
                                 <SidebarMenuSub>
+                                    {/* TODO: if there are drafts display it */}
                                     {item.items?.map((subItem) => (
                                         <DocumentActionSidebarMenuSubItem
                                             key={subItem.title}

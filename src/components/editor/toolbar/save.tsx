@@ -6,14 +6,16 @@ import { SaveIcon } from 'lucide-react';
 import { updateFileContent } from '@/actions/documents';
 import { toast } from 'sonner';
 import { useTransition } from 'react';
+import { updateDraftFileContent } from '@/actions/drafts';
 
 type SaveProps = {
     projectId: string;
     documentId: string;
+    draftId?: string;
     editor: Editor | null;
 };
 
-const ToolbarSave = ({ projectId, documentId, editor }: SaveProps) => {
+const ToolbarSave = ({ projectId, documentId, draftId, editor }: SaveProps) => {
     const [isPending, startTransition] = useTransition();
 
     const handleSave = () => {
@@ -22,11 +24,21 @@ const ToolbarSave = ({ projectId, documentId, editor }: SaveProps) => {
         const editorContent = JSON.stringify(editor?.getJSON());
 
         startTransition(async () => {
-            const response = await updateFileContent(
-                projectId,
-                documentId,
-                editorContent
-            );
+            let response: { status?: number; message?: string } = {};
+            if (!draftId) {
+                response = await updateFileContent(
+                    projectId,
+                    documentId,
+                    editorContent
+                );
+            } else {
+                response = await updateDraftFileContent(
+                    projectId,
+                    documentId,
+                    draftId,
+                    editorContent
+                );
+            }
 
             if (response.status && response.status !== 200) {
                 toast.error('Error saving document');

@@ -16,9 +16,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { deleteFile, updateFileName } from '@/actions/documents';
 import { toast } from 'sonner';
-import { redirect, RedirectType, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { NewFileFormState } from '@/lib/custom-types';
 import { Spinner } from '@/components/ui/spinner';
+import { createNewDraftFile } from '@/actions/drafts';
 
 export function DocumentActionSidebarMenuSubItem({
     pathname,
@@ -94,6 +95,19 @@ export function DocumentActionSidebarMenuSubItem({
     ) => {
         event.preventDefault();
         window.setTimeout(() => setIsEditing(true), 0);
+    };
+
+    const handleCreateDraft = async (projectId: string, documentId: string) => {
+        const response = await createNewDraftFile(projectId, documentId);
+
+        console.log('handleCreateDraft response');
+        console.log(response);
+
+        if (response.status === 200) {
+            toast.success('Draft created successfully');
+        } else {
+            toast.error('Something went wrong');
+        }
     };
 
     const handleDeleteDocument = async (
@@ -197,6 +211,17 @@ export function DocumentActionSidebarMenuSubItem({
                                             handleOnSelectRename(event)
                                         }>
                                         Rename
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        className="cursor-pointer"
+                                        onSelect={() =>
+                                            handleCreateDraft(
+                                                projectId,
+                                                doc.url.split('/')[2]
+                                            )
+                                        }>
+                                        Create Draft
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem
