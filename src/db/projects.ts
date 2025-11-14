@@ -4,6 +4,7 @@ import { ID, Query } from 'node-appwrite';
 import { DbResponse } from '@/db/response';
 import {
     DbDocumentRow,
+    DbDraftRow,
     DbProjectRow,
     Project,
     UserData,
@@ -232,13 +233,28 @@ export const getProjectById = async (
         });
         const documents = DbDocumentRow.fromObject(docRows.rows);
 
+        // get all user drafts
+        queries.length = 0;
+        queries.push(
+            Query.contains(
+                'documentId',
+                documents.map((document) => document.$id)
+            )
+        );
+        const draftRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
+            queries: queries,
+        });
+        const drafts = DbDraftRow.fromObject(draftRows.rows);
+
         // Sort documents by template order
         const sortedDocuments = sortDocumentsByTemplateOrder(
             documents,
             projects[0].type
         );
 
-        const project = new Project(projects[0], sortedDocuments);
+        const project = new Project(projects[0], sortedDocuments, drafts);
 
         return new DbResponse(200, 'OK', project);
     } catch {
@@ -413,6 +429,22 @@ export const getAllProjectsOfUser = async (
         });
         const documents = DbDocumentRow.fromObject(docRows.rows);
 
+        // get all user drafts
+        queries.length = 0;
+        queries.push(
+            Query.contains(
+                'documentId',
+                documents.map((document) => document.$id)
+            )
+        );
+        queries.push(Query.equal('userId', userId));
+        const draftRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
+            queries: queries,
+        });
+        const drafts = DbDraftRow.fromObject(draftRows.rows);
+
         const projectsObject: Project[] = [];
         projects.map((project) => {
             const projectDocuments = documents.filter(
@@ -425,7 +457,16 @@ export const getAllProjectsOfUser = async (
                 project.type
             );
 
-            projectsObject.push(new Project(project, sortedDocuments));
+            const projectDrafts = drafts.filter((draft) => {
+                const document = sortedDocuments.find(
+                    (doc) => doc.$id === draft.documentId
+                );
+                return document;
+            });
+
+            projectsObject.push(
+                new Project(project, sortedDocuments, projectDrafts)
+            );
         });
 
         return new DbResponse(200, 'OK', projectsObject);

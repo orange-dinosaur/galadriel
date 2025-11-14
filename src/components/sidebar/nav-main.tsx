@@ -98,6 +98,8 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
 
     const items = UserDataFull.fromUserDataFullObject(data).toNavMainItems();
 
+    console.log(items);
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
