@@ -109,6 +109,7 @@ export function DocumentActionSidebarMenuSubItem({
 
         if (response.status === 200) {
             toast.success('Draft created successfully');
+            router.refresh();
         } else {
             toast.error('Something went wrong');
         }
