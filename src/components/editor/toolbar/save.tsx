@@ -44,7 +44,9 @@ const ToolbarSave = ({ projectId, documentId, draftId, editor }: SaveProps) => {
                 toast.error('Error saving document');
                 return;
             } else {
-                toast.success('Document saved successfully');
+                toast.success(
+                    `${draftId ? 'Draft' : 'Document'} saved successfully`
+                );
                 return;
             }
         });

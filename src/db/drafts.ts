@@ -83,7 +83,7 @@ export const createNewDraft = async (
             fileId: fileId,
             file: new File(
                 [
-                    new Blob([fileContentJson], {
+                    new Blob([JSON.stringify(fileContentJson)], {
                         type: 'application/json',
                     }),
                 ],
