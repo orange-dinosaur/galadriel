@@ -40,6 +40,7 @@ import { useEffect, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
 import { DocumentActionSidebarMenuSubItem } from '@/components/documents/document-action';
 import { AddDcoumentSidebarMenuSubItem } from '@/components/documents/add-document';
+import { DraftActionSidebarMenuSubItem } from '../drafts/draft-action';
 
 export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
@@ -97,8 +98,6 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
     };
 
     const items = UserDataFull.fromUserDataFullObject(data).toNavMainItems();
-
-    console.log(items);
 
     return (
         <SidebarGroup>
@@ -197,22 +196,43 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                     </span>
                                 </span>
                             </SidebarMenuButton>
+
                             <CollapsibleTrigger asChild>
                                 <SidebarMenuAction className="data-[state=open]:rotate-90">
                                     <ChevronRight className="cursor-pointer" />
                                     <span className="sr-only">Toggle</span>
                                 </SidebarMenuAction>
                             </CollapsibleTrigger>
+
                             <CollapsibleContent>
                                 <SidebarMenuSub>
                                     {/* TODO: if there are drafts display it */}
                                     {item.items?.map((subItem) => (
-                                        <DocumentActionSidebarMenuSubItem
-                                            key={subItem.title}
-                                            pathname={pathname}
-                                            projectId={item.url.split('/')[1]}
-                                            document={subItem}
-                                        />
+                                        <>
+                                            <DocumentActionSidebarMenuSubItem
+                                                key={subItem.title}
+                                                pathname={pathname}
+                                                projectId={
+                                                    item.url.split('/')[1]
+                                                }
+                                                document={subItem}
+                                            />
+                                            {subItem.subItems?.map(
+                                                (subSubItem) => (
+                                                    <DraftActionSidebarMenuSubItem
+                                                        key={subItem.title}
+                                                        pathname={pathname}
+                                                        projectId={
+                                                            item.url.split(
+                                                                '/'
+                                                            )[1]
+                                                        }
+                                                        document={subItem}
+                                                        draft={subSubItem}
+                                                    />
+                                                )
+                                            )}
+                                        </>
                                     ))}
 
                                     {projectToAddDocumentTo ===

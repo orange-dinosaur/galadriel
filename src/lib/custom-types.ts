@@ -635,6 +635,10 @@ export class UserDataFull {
             items?: {
                 title: string;
                 url: string;
+                subItems?: {
+                    title: string;
+                    url: string;
+                }[];
             }[];
         }[] = this.projects.map((p) => ({
             name: p.project.name,
@@ -649,6 +653,12 @@ export class UserDataFull {
             items: p.documents.map((d) => ({
                 title: d.title || 'Untitled Document',
                 url: `/${p.project.$id}/${d.$id}`,
+                subItems: p.drafts
+                    ?.filter((draft) => draft.documentId === d.$id)
+                    .map((draft) => ({
+                        title: `${draft.$id}`,
+                        url: `/${p.project.$id}/${d.$id}/${draft.$id}`,
+                    })),
             })),
         }));
 
