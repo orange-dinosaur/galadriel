@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
-import { MoreHorizontalIcon, CheckIcon } from 'lucide-react';
+import { MoreHorizontalIcon, CheckIcon, ChevronRight } from 'lucide-react';
 import {
+    SidebarMenuAction,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
@@ -13,6 +14,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { deleteFile, updateFileName } from '@/actions/documents';
 import { toast } from 'sonner';
@@ -25,10 +27,12 @@ export function DocumentActionSidebarMenuSubItem({
     pathname,
     projectId,
     document: doc,
+    hasDrafts = false,
 }: {
     pathname: string;
     projectId: string;
     document: { title: string; url: string };
+    hasDrafts?: boolean;
 }) {
     const [isEditing, setIsEditing] = useState(false);
     const [fileName, setFileName] = useState(doc.title);
@@ -195,10 +199,12 @@ export function DocumentActionSidebarMenuSubItem({
                         </form>
                     )}
 
-                    <span className="flex gap-1">
+                    <span className="flex gap-1 shrink-0">
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
-                                <MoreHorizontalIcon className="max-w-3.5 max-h-3.5 cursor-pointer" />
+                                <button className="flex items-center justify-center">
+                                    <MoreHorizontalIcon className="max-w-3.5 max-h-3.5 cursor-pointer" />
+                                </button>
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent
@@ -237,6 +243,11 @@ export function DocumentActionSidebarMenuSubItem({
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        {hasDrafts && (
+                            <CollapsibleTrigger className="flex items-center justify-center transition-transform data-[state=open]:rotate-90">
+                                <ChevronRight className="max-w-3.5 max-h-3.5 cursor-pointer" />
+                            </CollapsibleTrigger>
+                        )}
                     </span>
                 </span>
             </SidebarMenuSubButton>

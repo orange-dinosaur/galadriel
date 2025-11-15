@@ -40,7 +40,7 @@ import { useEffect, useState } from 'react';
 import { ProjectAction } from '@/components/projects/project-action';
 import { DocumentActionSidebarMenuSubItem } from '@/components/documents/document-action';
 import { AddDcoumentSidebarMenuSubItem } from '@/components/documents/add-document';
-import { DraftActionSidebarMenuSubItem } from '../drafts/draft-action';
+import { DraftActionSidebarMenuSubItem } from '@/components/drafts/draft-action';
 
 export function NavMain({ data }: { data: UserDataFullObject }) {
     const pathname = usePathname();
@@ -206,33 +206,58 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
 
                             <CollapsibleContent>
                                 <SidebarMenuSub>
-                                    {/* TODO: if there are drafts display it */}
                                     {item.items?.map((subItem) => (
-                                        <>
-                                            <DocumentActionSidebarMenuSubItem
-                                                key={subItem.title}
-                                                pathname={pathname}
-                                                projectId={
-                                                    item.url.split('/')[1]
-                                                }
-                                                document={subItem}
-                                            />
-                                            {subItem.subItems?.map(
-                                                (subSubItem) => (
-                                                    <DraftActionSidebarMenuSubItem
-                                                        key={subItem.title}
-                                                        pathname={pathname}
-                                                        projectId={
-                                                            item.url.split(
-                                                                '/'
-                                                            )[1]
-                                                        }
-                                                        document={subItem}
-                                                        draft={subSubItem}
-                                                    />
+                                        <Collapsible
+                                            key={subItem.title}
+                                            asChild
+                                            defaultOpen={
+                                                pathname === subItem.url ||
+                                                pathname.startsWith(
+                                                    `${subItem.url}/`
                                                 )
-                                            )}
-                                        </>
+                                            }>
+                                            <>
+                                                <DocumentActionSidebarMenuSubItem
+                                                    pathname={pathname}
+                                                    projectId={
+                                                        item.url.split('/')[1]
+                                                    }
+                                                    document={subItem}
+                                                    hasDrafts={
+                                                        subItem.subItems &&
+                                                        subItem.subItems
+                                                            .length > 0
+                                                    }
+                                                />
+                                                <CollapsibleContent>
+                                                    <SidebarMenuSub>
+                                                        {subItem.subItems?.map(
+                                                            (subSubItem) => (
+                                                                <DraftActionSidebarMenuSubItem
+                                                                    key={
+                                                                        subSubItem.title
+                                                                    }
+                                                                    pathname={
+                                                                        pathname
+                                                                    }
+                                                                    projectId={
+                                                                        item.url.split(
+                                                                            '/'
+                                                                        )[1]
+                                                                    }
+                                                                    document={
+                                                                        subItem
+                                                                    }
+                                                                    draft={
+                                                                        subSubItem
+                                                                    }
+                                                                />
+                                                            )
+                                                        )}
+                                                    </SidebarMenuSub>
+                                                </CollapsibleContent>
+                                            </>
+                                        </Collapsible>
                                     ))}
 
                                     {projectToAddDocumentTo ===

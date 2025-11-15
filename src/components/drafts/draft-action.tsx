@@ -67,7 +67,9 @@ export function DraftActionSidebarMenuSubItem({
                     <span className="flex gap-1 shrink-0">
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
-                                <MoreHorizontalIcon className="max-w-3.5 max-h-3.5 cursor-pointer" />
+                                <button className="flex items-center justify-center">
+                                    <MoreHorizontalIcon className="max-w-3.5 max-h-3.5 cursor-pointer" />
+                                </button>
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent
