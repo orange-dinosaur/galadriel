@@ -104,9 +104,6 @@ export function DocumentActionSidebarMenuSubItem({
     const handleCreateDraft = async (projectId: string, documentId: string) => {
         const response = await createNewDraftFile(projectId, documentId);
 
-        console.log('handleCreateDraft response');
-        console.log(response);
-
         if (response.status === 200) {
             toast.success('Draft created successfully');
             router.refresh();
