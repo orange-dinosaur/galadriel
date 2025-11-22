@@ -318,3 +318,105 @@ export const DeleteDraftById = async (
         return new DbResponse(500, 'Internal server error');
     }
 };
+
+export const mergeDraftById = async (
+    projectId: string,
+    documentId: string,
+    draftId: string
+): Promise<DbResponse> => {
+    try {
+        user.sessionCookie = (await cookies()).get('session');
+
+        const { authenticatedUser, database, storage } =
+            await user.getUserAndDbAndStorage();
+
+        const queries: string[] = [];
+        queries.push(Query.equal('$id', draftId));
+        queries.push(Query.equal('documentId', documentId));
+        queries.push(Query.limit(1));
+
+        // get the draft
+        const draftRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
+            queries: queries,
+        });
+        const drafts = DbDraftRow.fromObject(draftRows.rows);
+
+        if (drafts.length === 0) {
+            return new DbResponse(404, 'Draft not found');
+        }
+
+        if (authenticatedUser?.$id !== drafts[0].userId) {
+            return new DbResponse(403, 'Access DENIED');
+        }
+
+        // get the draft content
+        const draftContent = await storage.getFileView({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: drafts[0].fileIdDraft || '',
+        });
+
+        // get the document
+        queries.length = 0;
+        queries.push(Query.equal('$id', documentId));
+        queries.push(Query.limit(1));
+        const docRows = await database.listRows({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            queries: queries,
+        });
+        const documents = DbDocumentRow.fromObject(docRows.rows);
+        if (documents.length === 0) {
+            return new DbResponse(404, 'Document not found');
+        }
+
+        // Delete old main file
+        await storage.deleteFile({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: documents[0].fileId || '',
+        });
+
+        const draftFileMetadata = await storage.getFile({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: drafts[0].fileIdDraft || '',
+        });
+
+        await storage.createFile({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: documents[0].fileId || '',
+            file: new File([draftContent], draftFileMetadata.name, {
+                type: 'application/json',
+            }),
+        });
+
+        // Now delete the draft
+        await storage.deleteFile({
+            bucketId: process.env.NEXT_PUBLIC_DOCUMENTS_BUCKET_ID || '',
+            fileId: drafts[0].fileIdDraft || '',
+        });
+
+        // Delete draft row
+        await database.deleteRow({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DRAFTS || '',
+            rowId: draftId,
+        });
+
+        // Update document drafts list
+        const newDraftsList =
+            documents[0].drafts?.filter((d) => d !== draftId) || [];
+        await database.updateRow({
+            databaseId: process.env.NEXT_PUBLIC_DATABASE_ID || '',
+            tableId: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || '',
+            rowId: documentId,
+            data: {
+                drafts: newDraftsList,
+            },
+        });
+
+        return new DbResponse(200, 'Draft merged successfully');
+    } catch {
+        return new DbResponse(500, 'Internal server error');
+    }
+};

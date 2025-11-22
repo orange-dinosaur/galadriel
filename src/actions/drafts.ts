@@ -1,6 +1,13 @@
 'use server';
 
-import { createNewDraft, DeleteDraftById, updateDraftById } from '@/db/drafts';
+import {
+    createNewDraft,
+    DeleteDraftById,
+    updateDraftById,
+    mergeDraftById,
+    getDraftById,
+} from '@/db/drafts';
+import { FullDraft } from '@/lib/custom-types';
 
 export async function createNewDraftFile(
     projectId: string,
@@ -49,5 +56,36 @@ export async function deleteDraftFile(
         return { status: response.status, message: response.message };
     }
 
-    return { status: 200, message: 'File saved' };
+    return { status: 200, message: 'File deleted' };
+}
+
+export async function mergeDraft(
+    projectId: string,
+    documentId: string,
+    draftId: string
+) {
+    const response = await mergeDraftById(projectId, documentId, draftId);
+
+    if (response.status !== 200) {
+        return { status: response.status, message: response.message };
+    }
+
+    return { status: 200, message: 'Draft merged' };
+}
+
+export async function getDraft(
+    projectId: string,
+    documentId: string,
+    draftId: string
+) {
+    const response = await getDraftById(projectId, documentId, draftId);
+
+    if (response.status !== 200) {
+        return { status: response.status, message: response.message };
+    }
+
+    const draft = FullDraft.fromObject(response.data);
+    const draftObject = draft.toObject();
+
+    return { status: 200, data: draftObject };
 }

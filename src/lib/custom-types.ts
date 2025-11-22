@@ -408,6 +408,33 @@ export class FileMetadata {
     }
 }
 
+export type FullDocumentObject = {
+    document: {
+        userId: string;
+        projectId: string;
+        title: string;
+        fileId: string;
+        drafts?: string[];
+        $id: string;
+        $createdAt: Date;
+        $updatedAt: Date;
+    };
+    fileMetadata: {
+        $id: string;
+        bucketId: string;
+        $createdAt: string;
+        $updatedAt: string;
+        $permissions: string[];
+        name: string;
+        signature: string;
+        mimeType: string;
+        sizeOriginal: number;
+        chunksTotal: number;
+        chunksUploaded: number;
+    };
+    fileContentJson: string;
+};
+
 export class FullDocument {
     document: DbDocumentRow;
     fileMetadata: FileMetadata;
@@ -423,11 +450,7 @@ export class FullDocument {
         this.fileContentJson = fileContentJson;
     }
 
-    static fromObject(data: {
-        document: any;
-        fileMetadata: string;
-        fileContentJson: string;
-    }) {
+    static fromObject(data: FullDocumentObject) {
         return new FullDocument(
             new DbDocumentRow(data.document),
             FileMetadata.fromObject(data.fileMetadata),
@@ -437,12 +460,49 @@ export class FullDocument {
 
     toObject() {
         return {
-            document: this.document,
-            fileMetadata: this.fileMetadata,
+            document: {
+                userId: this.document.userId,
+                projectId: this.document.projectId,
+                title: this.document.title,
+                fileId: this.document.fileId,
+                drafts: this.document.drafts,
+                $id: this.document.$id,
+                $createdAt: this.document.$createdAt,
+                $updatedAt: this.document.$updatedAt,
+            },
+            fileMetadata: this.fileMetadata.toObject(),
             fileContentJson: this.fileContentJson,
         };
     }
 }
+
+export type FullDraftObject = {
+    draft: {
+        userId: string;
+        documentId: string;
+        fileIdMain: string;
+        fileIdDraft: string;
+        fileIdSeparation: string;
+        version: number;
+        $id: string;
+        $createdAt: Date;
+        $updatedAt: Date;
+    };
+    fileMetadata: {
+        $id: string;
+        bucketId: string;
+        $createdAt: string;
+        $updatedAt: string;
+        $permissions: string[];
+        name: string;
+        signature: string;
+        mimeType: string;
+        sizeOriginal: number;
+        chunksTotal: number;
+        chunksUploaded: number;
+    };
+    fileContentJson: string;
+};
 
 export class FullDraft {
     draft: DbDraftRow;
@@ -459,11 +519,7 @@ export class FullDraft {
         this.fileContentJson = fileContentJson;
     }
 
-    static fromObject(data: {
-        draft: any;
-        fileMetadata: string;
-        fileContentJson: string;
-    }) {
+    static fromObject(data: FullDraftObject) {
         return new FullDraft(
             new DbDraftRow(data.draft),
             FileMetadata.fromObject(data.fileMetadata),
@@ -473,8 +529,18 @@ export class FullDraft {
 
     toObject() {
         return {
-            draft: this.draft,
-            fileMetadata: this.fileMetadata,
+            draft: {
+                userId: this.draft.userId,
+                documentId: this.draft.documentId,
+                fileIdMain: this.draft.fileIdMain,
+                fileIdDraft: this.draft.fileIdDraft,
+                fileIdSeparation: this.draft.fileIdSeparation,
+                version: this.draft.version,
+                $id: this.draft.$id,
+                $createdAt: this.draft.$createdAt,
+                $updatedAt: this.draft.$updatedAt,
+            },
+            fileMetadata: this.fileMetadata.toObject(),
             fileContentJson: this.fileContentJson,
         };
     }

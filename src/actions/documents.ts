@@ -1,11 +1,12 @@
 'use server';
 
 import { newFileSchema } from '@/actions/schemas';
-import { NewFileFormState } from '@/lib/custom-types';
+import { FullDocument, NewFileFormState } from '@/lib/custom-types';
 import {
     createNewDocument,
     DeleteDocumentById,
     updateDocumentById,
+    getDocumentById,
 } from '@/db/documents';
 
 export async function createNewFile(initialState: any, formData: FormData) {
@@ -41,6 +42,19 @@ export async function createNewFile(initialState: any, formData: FormData) {
     }
 
     return { status: 200, message: 'File updated' };
+}
+
+export async function getFile(projectId: string, documentId: string) {
+    const response = await getDocumentById(projectId, documentId);
+
+    if (response.status !== 200) {
+        return { status: response.status, message: response.message };
+    }
+
+    const fullDocument = FullDocument.fromObject(response.data);
+    const fullDocumentObject = fullDocument.toObject();
+
+    return { status: 200, data: fullDocumentObject };
 }
 
 export async function updateFileContent(

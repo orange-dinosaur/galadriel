@@ -15,6 +15,8 @@ import {
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { deleteDraftFile } from '@/actions/drafts';
+import { DraftCompareDialog } from '@/components/drafts/draft-compare-dialog';
+import { useState } from 'react';
 
 export function DraftActionSidebarMenuSubItem({
     pathname,
@@ -28,6 +30,7 @@ export function DraftActionSidebarMenuSubItem({
     draft: { title: string; url: string };
 }) {
     const router = useRouter();
+    const [compareDialogOpen, setCompareDialogOpen] = useState(false);
 
     const handleDeleteDraft = async (
         projectId: string,
@@ -50,49 +53,68 @@ export function DraftActionSidebarMenuSubItem({
     };
 
     return (
-        <SidebarMenuSubItem key={doc.title}>
-            <SidebarMenuSubButton
-                asChild
-                className={`${
-                    pathname === draft.url ||
-                    pathname.startsWith(`${draft.url}`)
-                        ? 'bg-secondary'
-                        : ''
-                }`}>
-                <span className="flex justify-between items-center gap-2">
-                    <a href={draft.url} className="min-w-0 flex-1">
-                        <p className="text-xs truncate">{draft.title}</p>
-                    </a>
+        <>
+            <SidebarMenuSubItem key={doc.title}>
+                <SidebarMenuSubButton
+                    asChild
+                    className={`${
+                        pathname === draft.url ||
+                        pathname.startsWith(`${draft.url}`)
+                            ? 'bg-secondary'
+                            : ''
+                    }`}>
+                    <span className="flex justify-between items-center gap-2">
+                        <a href={draft.url} className="min-w-0 flex-1">
+                            <p className="text-xs truncate">{draft.title}</p>
+                        </a>
 
-                    <span className="flex gap-1 shrink-0">
-                        <DropdownMenu modal={false}>
-                            <DropdownMenuTrigger asChild>
-                                <button className="flex items-center justify-center">
-                                    <MoreHorizontalIcon className="max-w-3.5 max-h-3.5 cursor-pointer" />
-                                </button>
-                            </DropdownMenuTrigger>
+                        <span className="flex gap-1 shrink-0">
+                            <DropdownMenu modal={false}>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="flex items-center justify-center">
+                                        <MoreHorizontalIcon className="max-w-3.5 max-h-3.5 cursor-pointer" />
+                                    </button>
+                                </DropdownMenuTrigger>
 
-                            <DropdownMenuContent
-                                className="w-40"
-                                align="center">
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem
-                                        className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground"
-                                        onSelect={() =>
-                                            handleDeleteDraft(
-                                                projectId,
-                                                doc.url.split('/')[2],
-                                                draft.url.split('/')[3]
-                                            )
-                                        }>
-                                        Delete
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                <DropdownMenuContent
+                                    className="w-40"
+                                    align="center">
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem
+                                            className="cursor-pointer"
+                                            onSelect={() =>
+                                                setCompareDialogOpen(true)
+                                            }>
+                                            Compare & Merge
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground"
+                                            onSelect={() =>
+                                                handleDeleteDraft(
+                                                    projectId,
+                                                    doc.url.split('/')[2],
+                                                    draft.url.split('/')[3]
+                                                )
+                                            }>
+                                            Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </span>
                     </span>
-                </span>
-            </SidebarMenuSubButton>
-        </SidebarMenuSubItem>
+                </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+
+            <DraftCompareDialog
+                open={compareDialogOpen}
+                onOpenChange={setCompareDialogOpen}
+                projectId={projectId}
+                documentId={doc.url.split('/')[2]}
+                draftId={draft.url.split('/')[3]}
+                draftTitle={draft.title}
+            />
+        </>
     );
 }
