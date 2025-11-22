@@ -218,7 +218,7 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                                         `${subItem.url}/`
                                                     )
                                                 }>
-                                                <>
+                                                <span>
                                                     <DocumentActionSidebarMenuSubItem
                                                         pathname={pathname}
                                                         projectId={
@@ -258,7 +258,7 @@ export function NavMain({ data }: { data: UserDataFullObject }) {
                                                             )}
                                                         </SidebarMenuSub>
                                                     </CollapsibleContent>
-                                                </>
+                                                </span>
                                             </Collapsible>
                                         ) : (
                                             <DocumentActionSidebarMenuSubItem
