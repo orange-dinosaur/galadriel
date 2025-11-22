@@ -52,7 +52,7 @@ export default async function ProtectedLayout({
                 <div className="flex flex-1">
                     <AppSidebar data={dataObject} />
                     <SidebarInset>
-                        <div className="flex flex-1 flex-col gap-4 p-4">
+                        <div className="flex flex-1 flex-col p-4 pt-0">
                             <div className="min-h-screen flex-1 md:min-h-min">
                                 {children}
                             </div>
