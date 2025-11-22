@@ -54,7 +54,6 @@ export function DraftCompareDialog({
             ])
                 .then(([mainFileRes, draftRes]) => {
                     if (mainFileRes.status === 200 && mainFileRes.data) {
-                        // @ts-ignore
                         let content = mainFileRes.data.fileContentJson;
                         if (typeof content === 'string') {
                             content = JSON.parse(content);
@@ -65,7 +64,6 @@ export function DraftCompareDialog({
                     }
 
                     if (draftRes.status === 200 && draftRes.data) {
-                        // @ts-ignore
                         let content = draftRes.data.fileContentJson;
                         if (typeof content === 'string') {
                             content = JSON.parse(content);
