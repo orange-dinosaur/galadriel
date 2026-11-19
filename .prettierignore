@@ -1,0 +1,4 @@
+.next
+drizzle
+pnpm-lock.yaml
+src/lib/db/auth-schema.ts

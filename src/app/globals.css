@@ -1,0 +1,165 @@
+:root {
+	/* Coral, light. The names match App.css where it has them. */
+	--bg: #ffffff;
+	--bg-chrome: #fcfbfb;
+	--bg-card: #ffffff;
+	--bg-hover: #f1f0ef;
+	--border: #e8e7e5;
+	--border-strong: #d6d4d2;
+	--text: #2e2b33;
+	--text-dim: #5f5c66;
+	--text-faint: #6c6972;
+	--graphic-faint: #86838c;
+	color-scheme: light;
+	--accent: #f8a67c;
+	--accent-text: #a8451f;
+	--accent-wash: #f8a67c47;
+	--on-accent: #2b1b16;
+	--accent-2: #f5bde6;
+	--accent-2-wash: #f5bde666;
+	--accent-3: #8bd5ca;
+	--accent-3-wash: #8bd5ca59;
+	--added: var(--accent-3);
+	--added-wash: var(--accent-3-wash);
+	--removed: var(--accent-2);
+	--removed-wash: var(--accent-2-wash);
+	--danger: #b3362c;
+	--surface-float: rgb(255 255 255 / 0.72);
+
+	--font-ui: "Instrument Sans", system-ui, sans-serif;
+	--font-title: "Instrument Serif", Georgia, serif;
+	--font-page: Newsreader, Georgia, serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+	--text-display: 400 34px/1.14 var(--font-title);
+	--text-heading: 400 24px/1.2 var(--font-title);
+	--text-title: 600 15px/1.3 var(--font-ui);
+	--text-ui: 400 13px/1.4 var(--font-ui);
+	--text-ui-strong: 600 13px/1.4 var(--font-ui);
+	--text-caption: 400 11px/1.35 var(--font-ui);
+	--tracking-display: -0.01em;
+	--tracking-heading: -0.01em;
+	--tracking-title: 0;
+	--tracking-ui: 0;
+
+	--radius-xs: 5px;
+	--radius-sm: 8px;
+	--radius-md: 11px;
+	--radius-lg: 18px;
+	--radius-pill: 9999px;
+
+	--space-xxs: 4px;
+	--space-xs: 8px;
+	--space-sm: 12px;
+	--space-md: 16px;
+	--space-lg: 24px;
+	--space-xl: 32px;
+	--space-xxl: 48px;
+	--space-section: 80px;
+
+	--hairline: 1px solid var(--border);
+	--shadow-float: 0 8px 30px rgb(0 0 0 / 0.16);
+	--shadow-cover: 3px 5px 30px rgb(0 0 0 / 0.22);
+	--material: saturate(180%) blur(20px);
+	--press: scale(0.95);
+	--lift: translateY(-3px);
+}
+
+/* Written twice: once for a desktop set to dark, once for a choice of Dark. */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--bg: #22222f;
+		--bg-chrome: #1c1c28;
+		--bg-card: #2b2b3a;
+		--bg-hover: #353545;
+		--border: #343444;
+		--border-strong: #484859;
+		--text: #dcdcea;
+		--text-dim: #b8b8ca;
+		--text-faint: #a0a0b4;
+		--graphic-faint: #838397;
+		color-scheme: dark;
+		--accent: #f8ac83;
+		--accent-text: #f8ac83;
+		--accent-wash: #f8ac8333;
+		--on-accent: #22222f;
+		--accent-2: #f5bde6;
+		--accent-2-wash: #f5bde62e;
+		--accent-3: #8bd5ca;
+		--accent-3-wash: #8bd5ca2e;
+		--danger: #f38ba8;
+		--surface-float: rgb(43 43 58 / 0.72);
+		--shadow-float: 0 8px 30px rgb(0 0 0 / 0.5);
+	}
+}
+
+:root[data-theme="dark"] {
+	--bg: #22222f;
+	--bg-chrome: #1c1c28;
+	--bg-card: #2b2b3a;
+	--bg-hover: #353545;
+	--border: #343444;
+	--border-strong: #484859;
+	--text: #dcdcea;
+	--text-dim: #b8b8ca;
+	--text-faint: #a0a0b4;
+	--graphic-faint: #838397;
+	color-scheme: dark;
+	--accent: #f8ac83;
+	--accent-text: #f8ac83;
+	--accent-wash: #f8ac8333;
+	--on-accent: #22222f;
+	--accent-2: #f5bde6;
+	--accent-2-wash: #f5bde62e;
+	--accent-3: #8bd5ca;
+	--accent-3-wash: #8bd5ca2e;
+	--danger: #f38ba8;
+	--surface-float: rgb(43 43 58 / 0.72);
+	--shadow-float: 0 8px 30px rgb(0 0 0 / 0.5);
+}
+
+/* Named three times so it beats both dark blocks. */
+@media (prefers-reduced-transparency: reduce) {
+	:root,
+	:root:not([data-theme="light"]),
+	:root[data-theme="dark"] {
+		--surface-float: var(--bg-card);
+		--material: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--press: none;
+		--lift: none;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--text);
+	font-family: var(--font-ui);
+	line-height: 1.5;
+}
+
+h1 {
+	font: var(--text-display);
+	letter-spacing: var(--tracking-display);
+}
+
+a {
+	color: var(--accent-text);
+}
+
+.page {
+	max-width: 44rem;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
